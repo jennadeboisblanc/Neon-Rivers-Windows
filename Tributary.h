@@ -30,7 +30,11 @@ public:
     void updatePulse();
 	void drawGradient(ofColor s, ofColor e);
 	void pulseGradient(ofColor s, ofColor e);
+	void pulseGradient(ofColor s, ofColor m, ofColor e);
 	ofColor get2WrapGradient(int ind, int totalInd, ofColor start, ofColor end);
+	ofColor get3WrapGradient(int ind, int totalInd, ofColor start, ofColor mid, ofColor end);
+
+	void drawInRadius(float x, float y, float r, ofColor c);
 
     bool inPulse(int index);
     bool inRadius(int index, ofPoint person, float r);

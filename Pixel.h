@@ -25,6 +25,8 @@ public:
     Pixel(vector <ofPoint> diodes);
 	ofColor c;
 
+	bool inRadius(float x, float y, float rad);
+
 	unsigned char getRed();
 	unsigned char getGreen();
 	unsigned char getBlue();

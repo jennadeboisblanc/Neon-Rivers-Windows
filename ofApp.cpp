@@ -15,14 +15,14 @@ void ofApp::setup() {
 	anNode.setup("10.206.231.230");
 
 	setupSimulation();
-	// setupKinect();
-	// ofSetWindowShape(previewWidth * 2, previewHeight * 2);
+	setupKinect();
+	ofSetWindowShape(previewWidth * 2, previewHeight * 2);
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
 	//setDMXTributaries();
-	// updateSkeleton();
+	updateSkeleton();
 	updateSimulation();
 	//for (int j = 0; j < 8; j++) {
 	//	for (int i = 0; i<512; i++) {
@@ -39,16 +39,8 @@ void ofApp::update() {
 	//}
 	
 	for (int i = 0; i < 8; i++) {
-		anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
 	}
-		//anNode.sendDmx("10.206.231.229", 0x0, 0x00, dmxData[0], 512);
-		//anNode.sendDmx("10.206.231.229", 0x0, 0x01, dmxData2, 512);
-		//anNode.sendDmx("10.206.231.229", 0x0, 0x02, dmxData3, 512);
-		//anNode.sendDmx("10.206.231.229", 0x0, 0x03, dmxData4, 512);
-		//anNode.sendDmx("10.206.231.229", 0x0, 0x04, dmxData5, 512);
-		//anNode.sendDmx("10.206.231.229", 0x0, 0x05, dmxData6, 512);
-		//anNode.sendDmx("10.206.231.229", 0x0, 0x06, dmxData7, 512);
-		//anNode.sendDmx("10.206.231.229", 0x0, 0x07, dmxData8, 512);
 }
 
 void ofApp::setDMXTributaries() {
@@ -81,8 +73,9 @@ void ofApp::setDMXTributaries() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	// drawKinect();
+	// 
 	drawSimulation();
+	drawKinect();
 }
 
 //--------------------------------------------------------------
@@ -96,10 +89,12 @@ void ofApp::setupKinect() {
 }
 
 //--------------------------------------------------------------
-void ofApp::drawKinect() {}
+void ofApp::updateSkeleton() {
+
+}
 
 //--------------------------------------------------------------
-void ofApp::updateSkeleton() {
+void ofApp::drawKinect() {
 	kinect.update();
 
 	//--
@@ -111,6 +106,31 @@ void ofApp::updateSkeleton() {
 		for (auto body : bodies) {
 			for (auto joint : body.joints) {
 				//now do something with the joints
+				if (joint.first == JointType_HandRight) {
+					float x = joint.second.getPosition().x*previewWidth;
+					float y = previewHeight - joint.second.getPosition().y*previewHeight;
+					//ofCircle(x, y, 50, 50);
+					for (int i = 0; i < tributaries.size(); i++) {
+						tributaries[i].drawInRadius(x, y, 50, ofColor(0, 0, 0));
+					}
+				}
+				else if (joint.first == JointType_HandLeft) {
+					float x = joint.second.getPosition().x*previewWidth;
+					float y = previewHeight - joint.second.getPosition().y*previewHeight;
+					//ofCircle(x, y, 50, 50);
+					for (int i = 0; i < tributaries.size(); i++) {
+						tributaries[i].drawInRadius(x, y, 50, ofColor(0, 0, 0));
+					}
+					//ofCircle(x, y, 50, 50);
+				}
+				else if (joint.first == JointType_SpineShoulder) {
+					float x = joint.second.getPosition().x*previewWidth;
+					float y = previewHeight - joint.second.getPosition().y*previewHeight;
+					//ofCircle(x, y, 50, 50);
+					for (int i = 0; i < tributaries.size(); i++) {
+						tributaries[i].drawInRadius(x, y, 100, ofColor(0, 0, 0));
+					}
+				}
 			}
 		}
 	}
@@ -230,8 +250,12 @@ void ofApp::drawSimulation() {
 		//tributaries[i].pulseDraw();
 		//tributaries[i].draw(ofColor(255, 255, 0));
 		//tributaries[i].drawGradient(ofColor::fromHsb((ofGetElapsedTimeMillis()/100) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis()/100) + 120) % 255, 255, 255));
-		tributaries[i].pulseGradient(ofColor::fromHsb((ofGetElapsedTimeMillis() / 1000) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis() / 1000) + 120) % 255, 255, 255));
-
+		
+		int offset = ofGetElapsedTimeMillis() / 1000;
+		ofColor c1 = ofColor::fromHsb(offset % 255, 255, 255);
+		ofColor c2 = ofColor::fromHsb((offset + 60) % 255, 255, 255);
+		ofColor c3 = ofColor::fromHsb((offset + 120) % 255, 255, 255);
+		tributaries[i].pulseGradient(c1, c3);
 	}
 }
 

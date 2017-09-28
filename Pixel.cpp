@@ -40,3 +40,11 @@ unsigned char Pixel::getGreen() {
 unsigned char Pixel::getBlue() {
 	return c.b;
 }
+
+bool Pixel::inRadius(float x2, float y2, float r) {
+	float x1 = diodes[0].x;
+	float y1 = diodes[0].y;
+	float dx = (x2 - x1)*(x2 - x1);
+	float dy = (y2 - y1) * (y2 - y1);
+	return (sqrt(dx + dy) < r);
+}

@@ -88,7 +88,6 @@ void Tributary::updatePulse(){
 void Tributary::draw(){
     for( int j = 0; j < pixels.size(); j++ ) {
         pixels[j].draw(ofColor::fromHsb(255*(id*1.0/42), 255*(j*1.0/pixels.size()), 255));
-		pixels[j].setColor(ofColor::fromHsb(255 * (id*1.0 / 42), 255 * (j*1.0 / pixels.size()), 255));
     }
 }
 
@@ -112,6 +111,14 @@ void Tributary::pulseGradient(ofColor start, ofColor end) {
 	}
 }
 
+void Tributary::pulseGradient(ofColor start, ofColor mid, ofColor end) {
+	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
+
+	for (int j = 0; j < pixels.size(); j++) {
+		pixels[j].draw(get2WrapGradient(j - offset, pixels.size(), start, end));
+	}
+}
+
 ofColor Tributary::get2WrapGradient(int ind, int totalInd, ofColor start, ofColor end) {
 	if (ind > totalInd) ind -= totalInd;
 	else if (ind < 0) ind += totalInd;
@@ -122,6 +129,23 @@ ofColor Tributary::get2WrapGradient(int ind, int totalInd, ofColor start, ofColo
 	else {
 		float pos = ofMap(ind, 0, totalInd / 2, 0, 1.0);
 		return start.lerp(end, pos);
+	}
+}
+
+ofColor Tributary::get3WrapGradient(int ind, int totalInd, ofColor start, ofColor mid, ofColor end) {
+	if (ind > totalInd) ind -= totalInd;
+	else if (ind < 0) ind += totalInd;
+	if (ind > totalInd / 3) {
+		float pos = ofMap(ind, totalInd / 2, totalInd, 0, 1.0);
+		return start.lerp(mid, pos);
+	}
+	else if (ind > totalInd *2.0 / 3) {
+		float pos = ofMap(ind, 0, totalInd / 3, 0, 1.0);
+		return mid.lerp(end, pos);
+	}
+	else {
+		float pos = ofMap(ind, 0, totalInd / 3, 0, 1.0);
+		return end.lerp(start, pos);
 	}
 }
 
@@ -146,15 +170,10 @@ bool Tributary::inPulse(int j) {
     else return false;
 }
 
-bool Tributary::inRadius(int j, ofPoint person, float r) {
-    ofPoint p = pixels[j].diodes[3];
-    float x = p.x - person.x;
-    float y = p.y - person.y;
-    float d = sqrt(x*x + y*y);
-    if (d < r) {
-        return true;
-    }
-    return false;
+void Tributary::drawInRadius(float x, float y, float r, ofColor c) {
+	for (int j = 0; j < pixels.size(); j++) {
+		if (pixels[j].inRadius(x, y, r)) pixels[j].draw(c);
+	}
 }
 
 //void Tributary::setPixel(int index, ofColor c) {
