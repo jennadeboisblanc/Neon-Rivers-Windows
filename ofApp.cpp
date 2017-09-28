@@ -5,50 +5,84 @@ int previewHeight = 480;
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-
-	// ARTNET SETUP  
-	// IP is our Node IP : machine on which the app runs  
-	// 0xFD corresponds to the Subnet+Universe we are referencing in Hexadecimal  
-	// Here we have Subnet 16 (F) Subnet 13 (D)  
-	//anNode.setup("10.206.231.229", 255);
-	//anNode.setup("10.206.231.230", 0xFF);
-
 	// Building Data DMX frame  
 	// DMX Frame is 512 bytes with value 0 to 255. Here we set every channel to 0.  
-	for (int i = 0; i<512; i++) {
-		dmxData[i] = 100;
+	for (int i = 0; i<8; i++) {
+		for (int j = 0; j < 512; j++)
+		dmxData[i][j] = 0;
 	}
 
 	anNode.setup("10.206.231.230");
-	// subnet, universe
-	//setupSimulation();
 
+	setupSimulation();
 	// setupKinect();
 	// ofSetWindowShape(previewWidth * 2, previewHeight * 2);
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	//setDMXTributaries();
 	// updateSkeleton();
-	//updateSimulation();
-	for (int i = 0; i<512; i++) {
-		if (i % 3 == 1 && i < 10) {
-			dmxData[i] = 255;
-		}
-		else if (i % 3 == 2 && i >= 10) {
-			dmxData[i] = 255;
-		}
-		else {
-			dmxData[i] = 0;
+	updateSimulation();
+	//for (int j = 0; j < 8; j++) {
+	//	for (int i = 0; i<512; i++) {
+	//		if (i % 3 == 1 && i < 10) {
+	//			dmxData[j][i] = 255;
+	//		}
+	//		else if (i % 3 == 2 && i >= 10) {
+	//			dmxData[j][i] = 255;
+	//		}
+	//		else {
+	//			dmxData[j][i] = 0;
+	//		}
+	//	}
+	//}
+	
+	for (int i = 0; i < 8; i++) {
+		anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
+	}
+		//anNode.sendDmx("10.206.231.229", 0x0, 0x00, dmxData[0], 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, 0x01, dmxData2, 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, 0x02, dmxData3, 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, 0x03, dmxData4, 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, 0x04, dmxData5, 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, 0x05, dmxData6, 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, 0x06, dmxData7, 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, 0x07, dmxData8, 512);
+}
+
+void ofApp::setDMXTributaries() {
+	int unis[8][6] = {
+		{ 0, 1, 2, 3 , 4, 40 },		// universe 1
+		{ 8, 5, 6, 7, 9, 41 },		// 2
+		{12, 13, 10, 11, 14, 42},	// 3
+		{17, 18, 19, 15, 16, -1},	// 4
+		{22, 23, 24, 20, 21, -1},	// 5
+		{25, 26, 29, 30, 31. -1},	// 6
+		{27, 28, 37, 38, 39, -1},
+		{32, 33, 34, 35, 36, -1}
+	};
+	for (int u = 0; u < 8; u++) {
+		int dx = 0;
+		for (int i = 0; i < 6; i++) {
+			if (unis[u][i] >= 0) {
+				for (int j = 0; j < tributaries[i].pixels.size(); j++) {
+					if (dx < 512-3) {
+						dmxData[u][dx++] = tributaries[i].pixels.at(j).getRed();
+						dmxData[u][dx++] = tributaries[i].pixels.at(j).getGreen();
+						dmxData[u][dx++] = tributaries[i].pixels.at(j).getBlue();
+					}
+				}
+			}
 		}
 	}
-		anNode.sendDmx("10.206.231.229", 0x0, 0x01, dmxData, 512);
 }
+
 
 //--------------------------------------------------------------
 void ofApp::draw() {
 	// drawKinect();
-	//drawSimulation();
+	drawSimulation();
 }
 
 //--------------------------------------------------------------
@@ -145,11 +179,6 @@ void ofApp::setupSimulation() {
 	tributaries[30].addTributaryEnd(tributaries[26]);
 	tributaries[30].addTributaryEnd(tributaries[28]);
 
-	//    tributaries.erase(tributaries.begin() + 17);
-	//    tributaries.erase(tributaries.begin() + 26 - 1);
-	//    tributaries.erase(tributaries.begin() + 28 - 2);
-
-
 	int erase[] = { 17, 26, 28 }; //, 29, 30, 31, 32, 37, 40};
 
 	for (int i = 2; i >= 0; i--) {
@@ -198,7 +227,11 @@ void ofApp::drawSimulation() {
 	ofDrawRectangle(0, 0, 33 * 30.48, 17 * 30.48);
 	int erase[] = { 29, 30, 31, 32, 37, 40 };
 	for (int i = 0; i < tributaries.size(); i++) {
-		tributaries[i].pulseDraw();
+		//tributaries[i].pulseDraw();
+		//tributaries[i].draw(ofColor(255, 255, 0));
+		//tributaries[i].drawGradient(ofColor::fromHsb((ofGetElapsedTimeMillis()/100) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis()/100) + 120) % 255, 255, 255));
+		tributaries[i].pulseGradient(ofColor::fromHsb((ofGetElapsedTimeMillis() / 1000) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis() / 1000) + 120) % 255, 255, 255));
+
 	}
 }
 
@@ -214,7 +247,6 @@ void ofApp::setRandomPulse(int ms, int ps, int sep) {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
 	// When key stroke, send the DMX frame (dmxData) which is 512 Bytes long over artnet to the specified IP (Here GrandMA)  
-	anNode.sendDmx("2.168.14.52", dmxData, 512);
 }
 
 //--------------------------------------------------------------

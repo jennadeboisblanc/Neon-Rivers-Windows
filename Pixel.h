@@ -17,11 +17,17 @@ class Pixel {
 public:
     
     void draw(ofColor c);
-    
+	void setColor(ofColor c);
+
     vector<ofPoint> diodes;
     
     Pixel();
     Pixel(vector <ofPoint> diodes);
+	ofColor c;
+
+	unsigned char getRed();
+	unsigned char getGreen();
+	unsigned char getBlue();
     
     
 private:

@@ -5,6 +5,7 @@
 #include "ofxSvg.h"
 #include "ofxArtnet.h"
 #include "Tributary.h"
+//#include "Universe.h"
 
 class ofApp : public ofBaseApp{
 
@@ -44,12 +45,20 @@ class ofApp : public ofBaseApp{
 		ofxSVG svg;
 		float step;
 		vector<Tributary> tributaries;
-		vector<Tributary> universes;
+		//vector<Universe> universes;
 		vector<ofPoint> points;
 
 		//DECLARE AN ARTNET NODE  
 		ofxArtnet anNode;
 		//DECLARE DMX DATA = 512 BYTES  
-		unsigned char dmxData[512];
-
+		//unsigned char dmxData1[512];
+		//unsigned char dmxData2[512];
+		//unsigned char dmxData3[512];
+		//unsigned char dmxData4[512];
+		//unsigned char dmxData5[512];
+		//unsigned char dmxData6[512];
+		//unsigned char dmxData7[512];
+		//unsigned char dmxData8[512];
+		unsigned char dmxData[8][512];
+		void setDMXTributaries();
 };

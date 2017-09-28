@@ -11,6 +11,9 @@
 
 #include <stdio.h>
 #include "ofMain.h"
+#include "ofxArtnet.h"
+#include "Tributary.h"
+
 
 class Universe {
     
@@ -25,8 +28,16 @@ public:
     const unsigned char getData();
     */
     
-    Universe();
-    
+    Universe(int address);
+	int address;
+	//DECLARE DMX DATA = 512 BYTES  
+	//unsigned char dmxData[512];
+	//void sendDMX();
+
+	//vector<Tributary> tributaries;
+	
+	//static ofxArtnet anNode;
+	//static void initArtNet();
     
     
 private:

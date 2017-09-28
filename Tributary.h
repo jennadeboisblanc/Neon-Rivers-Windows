@@ -28,11 +28,14 @@ public:
     void setRandomPulse(int packetSize, int separation);
     void pulseDraw();
     void updatePulse();
-    
+	void drawGradient(ofColor s, ofColor e);
+	void pulseGradient(ofColor s, ofColor e);
+	ofColor get2WrapGradient(int ind, int totalInd, ofColor start, ofColor end);
+
     bool inPulse(int index);
     bool inRadius(int index, ofPoint person, float r);
     
-    vector<ofPoint> getPoints();
+   // vector<ofPoint> getPoints();
     
 
     int id;

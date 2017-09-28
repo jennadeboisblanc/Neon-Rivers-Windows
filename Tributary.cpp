@@ -88,6 +88,7 @@ void Tributary::updatePulse(){
 void Tributary::draw(){
     for( int j = 0; j < pixels.size(); j++ ) {
         pixels[j].draw(ofColor::fromHsb(255*(id*1.0/42), 255*(j*1.0/pixels.size()), 255));
+		pixels[j].setColor(ofColor::fromHsb(255 * (id*1.0 / 42), 255 * (j*1.0 / pixels.size()), 255));
     }
 }
 
@@ -95,6 +96,33 @@ void Tributary::draw(ofColor c){
     for( int j = 0; j < pixels.size(); j++ ) {
         pixels[j].draw(c);
     }
+}
+
+void Tributary::drawGradient(ofColor start, ofColor end) {
+	for (int j = 0; j < pixels.size(); j++) {
+		pixels[j].draw(start.lerp(end, j*1.0/pixels.size()));
+	}
+}
+
+void Tributary::pulseGradient(ofColor start, ofColor end) {
+	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
+
+	for (int j = 0; j < pixels.size(); j++) {
+		pixels[j].draw(get2WrapGradient(j-offset, pixels.size(), start, end));
+	}
+}
+
+ofColor Tributary::get2WrapGradient(int ind, int totalInd, ofColor start, ofColor end) {
+	if (ind > totalInd) ind -= totalInd;
+	else if (ind < 0) ind += totalInd;
+	if (ind > totalInd / 2) {
+		float pos = ofMap(ind, totalInd / 2, totalInd, 0, 1.0);
+		return end.lerp(start, pos);
+	}
+	else {
+		float pos = ofMap(ind, 0, totalInd / 2, 0, 1.0);
+		return start.lerp(end, pos);
+	}
 }
 
 void Tributary::pulseDraw(){
