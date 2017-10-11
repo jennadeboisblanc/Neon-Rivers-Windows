@@ -32,33 +32,31 @@ class ofApp : public ofBaseApp{
 		void setupKinect();
 		void drawKinect();
 		void updateSkeleton();
+		void playShow();
 
 		// simulation
 		void setupSimulation();
 		void updateSimulation();
 		void drawSimulation();
+		void pulseGradient(ofColor c1, ofColor c2);
+		void drawGlitch(int x, int y, int r, ofColor c);
+		void drawGlitch(int x, int y, int r, ofColor c1, ofColor c2, ofColor c3, ofColor c4);
+		void glitchOut();
 		void setRandomPulse(int ms, int ps, int sep);
 		bool pulsing;
 		uint64_t lastChecked;
 		int pulseTime;
+		int numTracked;
+		
 		// SVG
 		ofxSVG svg;
 		float step;
 		vector<Tributary> tributaries;
-		//vector<Universe> universes;
 		vector<ofPoint> points;
 
 		//DECLARE AN ARTNET NODE  
 		ofxArtnet anNode;
 		//DECLARE DMX DATA = 512 BYTES  
-		//unsigned char dmxData1[512];
-		//unsigned char dmxData2[512];
-		//unsigned char dmxData3[512];
-		//unsigned char dmxData4[512];
-		//unsigned char dmxData5[512];
-		//unsigned char dmxData6[512];
-		//unsigned char dmxData7[512];
-		//unsigned char dmxData8[512];
 		unsigned char dmxData[8][512];
 		void setDMXTributaries();
 };

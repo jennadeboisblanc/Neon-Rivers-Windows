@@ -15,31 +15,18 @@ void ofApp::setup() {
 	anNode.setup("10.206.231.230");
 
 	setupSimulation();
-	setupKinect();
+	//setupKinect();
 	ofSetWindowShape(previewWidth * 2, previewHeight * 2);
+	numTracked = 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
 	//setDMXTributaries();
-	updateSkeleton();
+	//updateSkeleton();
 	updateSimulation();
-	//for (int j = 0; j < 8; j++) {
-	//	for (int i = 0; i<512; i++) {
-	//		if (i % 3 == 1 && i < 10) {
-	//			dmxData[j][i] = 255;
-	//		}
-	//		else if (i % 3 == 2 && i >= 10) {
-	//			dmxData[j][i] = 255;
-	//		}
-	//		else {
-	//			dmxData[j][i] = 0;
-	//		}
-	//	}
-	//}
-	
 	for (int i = 0; i < 8; i++) {
-		//anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
+		anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
 	}
 }
 
@@ -73,11 +60,12 @@ void ofApp::setDMXTributaries() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	// 
 	drawSimulation();
-	drawKinect();
+	//drawKinect();
 }
-
+void ofApp::playShow() {
+	//if ()
+}
 //--------------------------------------------------------------
 void ofApp::setupKinect() {
 	kinect.open();
@@ -103,6 +91,7 @@ void ofApp::drawKinect() {
 	//
 	{
 		auto bodies = kinect.getBodySource()->getBodies();
+		numTracked = bodies.size();
 		for (auto body : bodies) {
 			for (auto joint : body.joints) {
 				//now do something with the joints
@@ -111,7 +100,7 @@ void ofApp::drawKinect() {
 					float y = previewHeight - joint.second.getPosition().y*previewHeight;
 					//ofCircle(x, y, 50, 50);
 					for (int i = 0; i < tributaries.size(); i++) {
-						tributaries[i].drawInRadius(x, y, 50, ofColor(0, 0, 0));
+						tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
 					}
 				}
 				else if (joint.first == JointType_HandLeft) {
@@ -119,7 +108,7 @@ void ofApp::drawKinect() {
 					float y = previewHeight - joint.second.getPosition().y*previewHeight;
 					//ofCircle(x, y, 50, 50);
 					for (int i = 0; i < tributaries.size(); i++) {
-						tributaries[i].drawInRadius(x, y, 50, ofColor(0, 0, 0));
+						tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
 					}
 					//ofCircle(x, y, 50, 50);
 				}
@@ -134,32 +123,6 @@ void ofApp::drawKinect() {
 			}
 		}
 	}
-	//
-	//--
-
-
-
-	//--
-	//Getting bones (connected joints)
-	//--
-	//
-	{
-		// Note that for this we need a reference of which joints are connected to each other.
-		// We call this the 'boneAtlas', and you can ask for a reference to this atlas whenever you like
-		auto bodies = kinect.getBodySource()->getBodies();
-		auto boneAtlas = ofxKinectForWindows2::Data::Body::getBonesAtlas();
-
-		for (auto body : bodies) {
-			for (auto bone : boneAtlas) {
-				auto firstJointInBone = body.joints[bone.first];
-				auto secondJointInBone = body.joints[bone.second];
-
-				//now do something with the joints
-			}
-		}
-	}
-	//
-	//--
 }
 
 //--------------------------------------------------------------
@@ -205,6 +168,9 @@ void ofApp::setupSimulation() {
 		tributaries.erase(tributaries.begin() + erase[i]);
 	}
 
+	for (int i = 0; i < tributaries.size(); i++) {
+		tributaries[i].setGroup(i);
+	}
 
 	pulsing = true;
 	setRandomPulse(40, 2, 30); // millis, packet size, separation
@@ -230,9 +196,9 @@ void ofApp::setupSimulation() {
 
 //--------------------------------------------------------------
 void ofApp::updateSimulation() {
+	if (ofGetElapsedTimeMillis() < lastChecked) lastChecked = 0;
 	if (pulsing) {
-		if (ofGetElapsedTimeMillis() < lastChecked) lastChecked = 0;
-		else if (ofGetElapsedTimeMillis() - lastChecked > pulseTime) {
+		if (ofGetElapsedTimeMillis() - lastChecked > pulseTime) {
 			for (int i = 0; i < tributaries.size(); i++) {
 				tributaries[i].updatePulse();
 			}
@@ -245,18 +211,25 @@ void ofApp::updateSimulation() {
 void ofApp::drawSimulation() {
 	ofSetColor(220);
 	ofDrawRectangle(0, 0, 33 * 30.48, 17 * 30.48);
-	int erase[] = { 29, 30, 31, 32, 37, 40 };
-	for (int i = 0; i < tributaries.size(); i++) {
-		//tributaries[i].pulseDraw();
-		//tributaries[i].draw(ofColor(255, 255, 0));
-		//tributaries[i].drawGradient(ofColor::fromHsb((ofGetElapsedTimeMillis()/100) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis()/100) + 120) % 255, 255, 255));
-		
-		int offset = ofGetElapsedTimeMillis() / 1000;
-		ofColor c1 = ofColor::fromHsb(offset % 255, 255, 255);
-		ofColor c2 = ofColor::fromHsb((offset + 60) % 255, 255, 255);
-		ofColor c3 = ofColor::fromHsb((offset + 120) % 255, 255, 255);
-		tributaries[i].pulseGradient(c1, c3);
+	//int erase[] = { 29, 30, 31, 32, 37, 40 };
+	int offset = ofGetElapsedTimeMillis() / 1000;
+	ofColor c1 = ofColor::fromHsb(offset % 255, 255, 255);
+	ofColor c2 = ofColor::fromHsb((offset + 120) % 255, 255, 255);
+	if (numTracked < 5) {
+		pulseGradient(c1, c2);
+		//drawGlitch(ofGetMouseX(), ofGetMouseY(), 60, ofColor(0, 0, 0));
+
+		// purple orange glitch
+		ofColor g1 = ofColor(128, 255, 0);
+		ofColor g2 = ofColor(102, 51, 0);
+		ofColor g3 = ofColor(204, 204, 0);
+		ofColor g4 = ofColor(64, 64, 64);
+		drawGlitch(ofGetMouseX(), ofGetMouseY(), 60, g1, g2, g3, g4);
 	}
+	else {
+		glitchOut();
+	}
+	//glitchOut();
 }
 
 //--------------------------------------------------------------
@@ -265,6 +238,69 @@ void ofApp::setRandomPulse(int ms, int ps, int sep) {
 	pulseTime = ms;
 	for (int i = 0; i < tributaries.size(); i++) {
 		tributaries[i].setRandomPulse(ps, sep);
+	}
+}
+
+void ofApp::pulseGradient(ofColor c1, ofColor c2) {
+	for (int i = 0; i < tributaries.size(); i++) {
+		//tributaries[i].pulseDraw();
+		//tributaries[i].draw(ofColor(255, 255, 0));
+		//tributaries[i].drawGradient(ofColor::fromHsb((ofGetElapsedTimeMillis()/100) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis()/100) + 120) % 255, 255, 255));
+		
+		// icey
+		//ofColor t0 = ofColor(153, 255, 255);
+		//ofColor t1 = ofColor(153, 204, 255);
+		//ofColor t2 = ofColor(204, 255, 229);
+		//ofColor t3 = ofColor(204, 255, 255);
+		
+		// baskin robbins rainbow sherbert
+		//ofColor t0 = ofColor(255, 204, 204);
+		//ofColor t1 = ofColor(255, 178, 102);
+		//ofColor t2 = ofColor(255, 102, 178);
+		//ofColor t3 = ofColor(127, 0, 255);
+
+		// icey sherbert
+		//ofColor t0 = ofColor(204, 229, 255);
+		//ofColor t1 = ofColor(153, 153, 255);
+		//ofColor t2 = ofColor(178, 102, 255);
+		//ofColor t3 = ofColor(255, 51, 255);
+
+		// green ice
+		//ofColor t0 = ofColor(204, 229, 255);
+		//ofColor t1 = ofColor(153, 255, 255);
+		//ofColor t2 = ofColor(102, 255, 178);
+		//ofColor t3 = ofColor(51, 255, 51);
+
+		ofColor t0 = ofColor(153, 153, 255);
+		ofColor t1 = ofColor(178, 102, 255);
+		ofColor t2 = ofColor(255, 51, 255);
+		ofColor t3 = ofColor(255, 0, 127);
+		ofColor t4 = ofColor(204, 229, 255);
+		ofColor t5 = ofColor(153, 255, 255);
+		ofColor t6 = ofColor(102, 255, 178);
+		ofColor t7 = ofColor(51, 255, 51);
+		ofColor t8 = ofColor(128, 255, 0);
+
+		tributaries[i].pulseGradient(t0, t1, t2, t3, t4, t5, t6, t7, t8);
+		//tributaries[i].pulseGradient(c1, c2, ofColor(0, 255, 0), ofColor(0, 0, 255));
+	}
+}
+
+void ofApp::drawGlitch(int x, int y, int r, ofColor c) {
+	for (int i = 0; i < tributaries.size(); i++) {
+		tributaries[i].drawGlitch(x, y, r, c);
+	}
+}
+
+void ofApp::drawGlitch(int x, int y, int r, ofColor c1, ofColor c2, ofColor c3, ofColor c4) {
+	for (int i = 0; i < tributaries.size(); i++) {
+		tributaries[i].drawGlitch(x, y, r, c1, c2, c3, c4);
+	}
+}
+
+void ofApp::glitchOut() {
+	for (int i = 0; i < tributaries.size(); i++) {
+		tributaries[i].glitchOut();
 	}
 }
 
