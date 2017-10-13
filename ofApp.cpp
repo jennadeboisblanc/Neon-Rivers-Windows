@@ -15,15 +15,15 @@ void ofApp::setup() {
 	anNode.setup("10.206.231.230");
 
 	setupSimulation();
-	//setupKinect();
+	setupKinect();
 	ofSetWindowShape(previewWidth * 2, previewHeight * 2);
 	numTracked = 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	//setDMXTributaries();
-	//updateSkeleton();
+	setDMXTributaries();
+	updateSkeleton();
 	updateSimulation();
 	for (int i = 0; i < 8; i++) {
 		anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
@@ -31,37 +31,58 @@ void ofApp::update() {
 }
 
 void ofApp::setDMXTributaries() {
-	int unis[8][6] = {
-		{ 0, 1, 2, 3 , 4, 40 },		// universe 1
-		{ 8, 5, 6, 7, 9, 41 },		// 2
-		{12, 13, 10, 11, 14, 42},	// 3
-		{17, 18, 19, 15, 16, -1},	// 4
-		{22, 23, 24, 20, 21, -1},	// 5
-		{25, 26, 29, 30, 31. -1},	// 6
-		{27, 28, 37, 38, 39, -1},
-		{32, 33, 34, 35, 36, -1}
+	int decoderUnis[40] = {
+		0, 0, 0,
+		1, 1, 1,
+		2, 2, 2, 2,
+		3, 3, 3, 3, 3, 3,
+		4, 4, 4, 4, 4,
+		5, 5, 5, 5, 5, 5,
+		6, 6, 6, 6, 6,
+		7, 7, 7, 7, 7, 7, 7, 7
 	};
-	for (int u = 0; u < 8; u++) {
-		int dx = 0;
-		for (int i = 0; i < 6; i++) {
-			if (unis[u][i] >= 0) {
-				for (int j = 0; j < tributaries[i].pixels.size(); j++) {
-					if (dx < 512-3) {
-						dmxData[u][dx++] = tributaries[i].pixels.at(j).getRed();
-						dmxData[u][dx++] = tributaries[i].pixels.at(j).getGreen();
-						dmxData[u][dx++] = tributaries[i].pixels.at(j).getBlue();
-					}
-				}
+	int uniIndex[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	for (int i = 0; i < 40; i++) {
+		int u = decoderUnis[i];
+		for (int j = 0; j < tributaries[i].pixels.size(); j++) {
+			if (uniIndex[u] < 512 - 3) {
+				dmxData[u][uniIndex[u]++] = tributaries[i].pixels.at(j).getRed();
+				dmxData[u][uniIndex[u]++] = tributaries[i].pixels.at(j).getGreen();
+				dmxData[u][uniIndex[u]++] = tributaries[i].pixels.at(j).getBlue();
 			}
 		}
 	}
+	//int unis[8][6] = {
+	//	{ 0, 1, 2, -1, -1, -1 },		// universe 1
+	//	{3, 4, 5, -1, -1, -1 },		// 2
+	//	{6, 7, 8, 9, -1, -1},	// 3
+	//	{17, 18, 19, 15, 16, -1},	// 4
+	//	{22, 23, 24, 20, 21, -1},	// 5
+	//	{25, 26, 29, 30, 31. -1},	// 6
+	//	{27, 28, 37, 38, 39, -1},
+	//	{32, 33, 34, 35, 36, -1}
+	//};
+	//for (int u = 0; u < 8; u++) {
+	//	int dx = 0;
+	//	for (int i = 0; i < 6; i++) {
+	//		if (unis[u][i] >= 0) {
+	//			for (int j = 0; j < tributaries[i].pixels.size(); j++) {
+	//				if (dx < 512-3) {
+	//					dmxData[u][dx++] = tributaries[i].pixels.at(j).getRed();
+	//					dmxData[u][dx++] = tributaries[i].pixels.at(j).getGreen();
+	//					dmxData[u][dx++] = tributaries[i].pixels.at(j).getBlue();
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 
 //--------------------------------------------------------------
 void ofApp::draw() {
 	drawSimulation();
-	//drawKinect();
+	drawKinect();
 }
 void ofApp::playShow() {
 	//if ()
@@ -91,33 +112,36 @@ void ofApp::drawKinect() {
 	//
 	{
 		auto bodies = kinect.getBodySource()->getBodies();
-		numTracked = bodies.size();
+		numTracked = 0;
 		for (auto body : bodies) {
-			for (auto joint : body.joints) {
-				//now do something with the joints
-				if (joint.first == JointType_HandRight) {
-					float x = joint.second.getPosition().x*previewWidth;
-					float y = previewHeight - joint.second.getPosition().y*previewHeight;
-					//ofCircle(x, y, 50, 50);
-					for (int i = 0; i < tributaries.size(); i++) {
-						tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
+			if (body.tracked == true) {
+				numTracked++;
+				for (auto joint : body.joints) {
+					//now do something with the joints
+					if (joint.first == JointType_HandRight) {
+						float x = joint.second.getPosition().x*previewWidth;
+						float y = previewHeight - joint.second.getPosition().y*previewHeight;
+						//ofCircle(x, y, 50, 50);
+						for (int i = 0; i < tributaries.size(); i++) {
+							tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
+						}
 					}
-				}
-				else if (joint.first == JointType_HandLeft) {
-					float x = joint.second.getPosition().x*previewWidth;
-					float y = previewHeight - joint.second.getPosition().y*previewHeight;
-					//ofCircle(x, y, 50, 50);
-					for (int i = 0; i < tributaries.size(); i++) {
-						tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
+					else if (joint.first == JointType_HandLeft) {
+						float x = joint.second.getPosition().x*previewWidth;
+						float y = previewHeight - joint.second.getPosition().y*previewHeight;
+						//ofCircle(x, y, 50, 50);
+						for (int i = 0; i < tributaries.size(); i++) {
+							tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
+						}
+						//ofCircle(x, y, 50, 50);
 					}
-					//ofCircle(x, y, 50, 50);
-				}
-				else if (joint.first == JointType_SpineShoulder) {
-					float x = joint.second.getPosition().x*previewWidth;
-					float y = previewHeight - joint.second.getPosition().y*previewHeight;
-					//ofCircle(x, y, 50, 50);
-					for (int i = 0; i < tributaries.size(); i++) {
-						tributaries[i].drawInRadius(x, y, 100, ofColor(0, 0, 0));
+					else if (joint.first == JointType_SpineShoulder) {
+						float x = joint.second.getPosition().x*previewWidth;
+						float y = previewHeight - joint.second.getPosition().y*previewHeight;
+						//ofCircle(x, y, 50, 50);
+						for (int i = 0; i < tributaries.size(); i++) {
+							tributaries[i].drawInRadius(x, y, 100, ofColor(0, 0, 0));
+						}
 					}
 				}
 			}
