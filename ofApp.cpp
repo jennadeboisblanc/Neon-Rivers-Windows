@@ -411,6 +411,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(153, 204, 255);
 			gradientColors[2] = ofColor(204, 255, 229);
 			gradientColors[3] = ofColor(204, 255, 255);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 1) {
@@ -420,6 +425,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(255, 178, 102);
 			gradientColors[2] = ofColor(255, 102, 178);
 			gradientColors[3] = ofColor(127, 0, 255);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 2) {
@@ -429,6 +439,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(153, 153, 255);
 			gradientColors[2] = ofColor(178, 102, 255);
 			gradientColors[3] = ofColor(255, 51, 255);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 3) {
@@ -438,6 +453,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(153, 255, 255);
 			gradientColors[2] = ofColor(102, 255, 178);
 			gradientColors[3] = ofColor(51, 255, 51);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 4) {
@@ -451,14 +471,26 @@ void ofApp::setMode() {
 			gradientColors[6] = ofColor(102, 255, 178);
 			gradientColors[7] = ofColor(51, 255, 51);
 			gradientColors[8] = ofColor(128, 255, 0);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 5) {
+			// this is a new mode
+			//
 			numSelect = 4;
 			gradientColors[0] = ofColor(153, 153, 255);
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 6) {
@@ -467,6 +499,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 7) {
@@ -475,6 +512,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 8) {
@@ -483,6 +525,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 9) {
@@ -491,6 +538,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 10) {
@@ -499,6 +551,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 11) {
@@ -507,6 +564,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 12) {
@@ -515,6 +577,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 13) {
@@ -523,6 +590,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 14) {
@@ -531,6 +603,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 15) {
@@ -539,6 +616,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 16) {
@@ -547,6 +629,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 17) {
@@ -555,6 +642,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 18) {
@@ -563,6 +655,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 19) {
@@ -571,6 +668,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 20) {
@@ -579,6 +681,11 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 		else if (modeSelect == 21) {
@@ -587,6 +694,25 @@ void ofApp::setMode() {
 			gradientColors[1] = ofColor(178, 102, 255);
 			gradientColors[2] = ofColor(255, 51, 255);
 			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
+			setStoredColors();
+		}
+		else if (modeSelect == 22) {
+			// this is whatever
+			numSelect = 4;
+			gradientColors[0] = ofColor(153, 153, 255);
+			gradientColors[1] = ofColor(178, 102, 255);
+			gradientColors[2] = ofColor(255, 51, 255);
+			gradientColors[3] = ofColor(255, 0, 127);
+
+			glitchColors[0] = ofColor(128, 255, 0);
+			glitchColors[1] = ofColor(102, 51, 0);
+			glitchColors[2] = ofColor(204, 204, 0);
+			glitchColors[3] = ofColor(64, 64, 64);
 			setStoredColors();
 		}
 
@@ -595,6 +721,7 @@ void ofApp::setMode() {
 }
 
 void ofApp::changeMode() {
+	if (ofGetElapsedTimef() < modeTime) 
 	if (ofGetElapsedTimef() > modeTime + modeDuration) {
 	}
 }
