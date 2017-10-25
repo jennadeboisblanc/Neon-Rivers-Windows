@@ -5,7 +5,7 @@
 #include "ofxSvg.h"
 #include "ofxArtnet.h"
 #include "Tributary.h"
-#include "ofxButtons.h"
+//#include "ofxButtons.h"
 
 enum {
 	COLOR_RED,
@@ -32,7 +32,7 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+
 		// kinect
 		ofxKFW2::Device kinect;
 		void setupKinect();
@@ -46,6 +46,7 @@ class ofApp : public ofBaseApp{
 		void drawSimulation();
 		void pulseGradient(int num);
 		void drawGlitch(int x, int y, int r, ofColor c);
+		void drawTributary(int ind);
 		void drawGlitch(int x, int y, int r, ofColor c1, ofColor c2, ofColor c3, ofColor c4);
 		void glitchOut();
 		void setRandomPulse(int ms, int ps, int sep);
@@ -62,19 +63,22 @@ class ofApp : public ofBaseApp{
 		vector<Tributary> tributaries;
 		vector<ofPoint> points;
 
-		//DECLARE AN ARTNET NODE  
+		//DECLARE AN ARTNET NODE
 		ofxArtnet anNode;
-		//DECLARE DMX DATA = 512 BYTES  
+		//DECLARE DMX DATA = 512 BYTES
 		unsigned char dmxData[8][512];
 		void setDMXTributaries();
 
 		// button
-		ButtonManager buttons;
+		/*ButtonManager buttons;
 		void initButtons();
+		bool bReset;*/
 		int numSelect;
-		bool bReset;
 		int modeSelect;
 		void setMode();
+		void changeMode();
+		float modeTime;
+		int modeDuration;
 
 		// colors
 		float storedColors[9][3];
@@ -83,8 +87,10 @@ class ofApp : public ofBaseApp{
 		void setStoredColors();
 		void setGradientColors();
 
-		// change mode
-		void changeMode();
-		float modeTime;
-		int modeDuration;
+		// transitioning
+		boolean transitioning;
+		ofColor previousColors[9];
+		void transitionColors();
+		void pulseGradientTransition(int num);
+
 };

@@ -5,8 +5,8 @@ int previewHeight = 480;
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-	// Building Data DMX frame  
-	// DMX Frame is 512 bytes with value 0 to 255. Here we set every channel to 0.  
+	// Building Data DMX frame
+	// DMX Frame is 512 bytes with value 0 to 255. Here we set every channel to 0.
 	for (int i = 0; i<8; i++) {
 		for (int j = 0; j < 512; j++)
 		dmxData[i][j] = 0;
@@ -14,22 +14,21 @@ void ofApp::setup() {
 
 	initColors();
 	//initButtons();
-	
+
 
 	anNode.setup("10.206.231.230");
 
 	setupSimulation();
-	//setupKinect();
+	setupKinect();
 	ofSetWindowShape(previewWidth * 2, previewHeight * 2);
 	numTracked = 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	//setDMXTributaries();
+	setDMXTributaries();
+	changeMode();
 	//updateSkeleton();
-	setMode();
-	updateSimulation();
 	for (int i = 0; i < 8; i++) {
 		anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
 	}
@@ -37,14 +36,46 @@ void ofApp::update() {
 
 void ofApp::setDMXTributaries() {
 	int decoderUnis[40] = {
-		0, 0, 0,
-		1, 1, 1,
-		2, 2, 2, 2,
-		3, 3, 3, 3, 3, 3,
-		4, 4, 4, 4, 4,
-		5, 5, 5, 5, 5, 5,
-		6, 6, 6, 6, 6,
-		7, 7, 7, 7, 7, 7, 7, 7
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1,
+		2,
+		2,
+		2,
+		2,
+		3,
+		3,
+		3,
+		3,
+		3,
+		4,
+		4,
+		4,
+		4,
+		4,
+		5,
+		5,
+		5,
+		5,
+		5,
+		5,
+		6,
+		6,
+		6,
+		6,
+		6,
+		7,
+		7,
+		7,
+		7,
+		7,
+		7,
+		7,
+		7
 	};
 	int uniIndex[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 	for (int i = 0; i < 40; i++) {
@@ -57,30 +88,6 @@ void ofApp::setDMXTributaries() {
 			}
 		}
 	}
-	//int unis[8][6] = {
-	//	{ 0, 1, 2, -1, -1, -1 },		// universe 1
-	//	{3, 4, 5, -1, -1, -1 },		// 2
-	//	{6, 7, 8, 9, -1, -1},	// 3
-	//	{17, 18, 19, 15, 16, -1},	// 4
-	//	{22, 23, 24, 20, 21, -1},	// 5
-	//	{25, 26, 29, 30, 31. -1},	// 6
-	//	{27, 28, 37, 38, 39, -1},
-	//	{32, 33, 34, 35, 36, -1}
-	//};
-	//for (int u = 0; u < 8; u++) {
-	//	int dx = 0;
-	//	for (int i = 0; i < 6; i++) {
-	//		if (unis[u][i] >= 0) {
-	//			for (int j = 0; j < tributaries[i].pixels.size(); j++) {
-	//				if (dx < 512-3) {
-	//					dmxData[u][dx++] = tributaries[i].pixels.at(j).getRed();
-	//					dmxData[u][dx++] = tributaries[i].pixels.at(j).getGreen();
-	//					dmxData[u][dx++] = tributaries[i].pixels.at(j).getBlue();
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 
@@ -158,8 +165,6 @@ void ofApp::drawKinect() {
 //--------------------------------------------------------------
 void ofApp::setupSimulation() {
 	ofSetFrameRate(40);
-
-
 	ofBackground(255);
 	ofSetColor(0);
 
@@ -167,9 +172,7 @@ void ofApp::setupSimulation() {
 	// SVG
 	vector<ofPolyline> outlines;
 	svg.load("install.svg");
-	float h = svg.getHeight();
-	//float factor = 490/h;
-	float factor = (33 * 30.48) / svg.getWidth();
+
 	for (int i = 0; i < svg.getNumPath(); i++) {
 		ofPath p = svg.getPathAt(i);
 		// svg defaults to non zero winding which doesn't look so good as contours
@@ -179,49 +182,108 @@ void ofApp::setupSimulation() {
 			outlines.push_back(lines[j].getResampledBySpacing(1));
 		}
 	}
-	vector<int> pathOrder = { 39,34,35, 42,28, 29, 9,18, 44,26,27,19,21,8, 41,20, 7,36,10,11, 5, 22, 0, 1, 2,13,15,38,37,14, 12, 25, 3, 4, 17, 23,16,24,6,31,30,43,32,33,40 };
 
-	//svg.getNumPath()
+
+	/////// SET THE TRIBS
+	 vector<int> pathOrder = {
+		 4,
+		 7,
+		 6,
+		 16,
+		 8,
+		 21,
+		 28,
+		 26,
+		 9,
+		 24,
+		 30,
+		 18,
+		 39,
+		 3,
+		 14,
+		 29,
+		 17,
+		 36,
+		 35,
+		 10,
+		 22,
+		 5,
+		 15,
+		 12,
+		 38,
+		 0,
+		 20,
+		 34,
+		 2,
+		 23,
+		 1,
+		 11,
+		 32,
+		 33,
+		 13,
+		 25,
+		 27,
+		 31,
+		 37,
+		 19
+	 };
+	int pixelsPerTrib[] = {
+		165,
+		159,
+		153,
+		153,
+		138,
+		60,
+		136,
+		141,
+		129,
+		123,
+		114,
+		129,
+		108,
+		105,
+		105,
+		60,
+		102,
+		102,
+		102,
+		99,
+		78,
+		93,
+		93,
+		90,
+		90,
+		87,
+		39,
+		96,
+		87,
+		87,
+		84,
+		81,
+		72,
+		72,
+		72,
+		69,
+		57,
+		57,
+		51,
+		45
+	};
 	for (int k = 0; k < pathOrder.size(); k++) {
 		ofPath& mypath = svg.getPathAt(pathOrder[k]);
 		const vector<ofPolyline>& polylines = mypath.getOutline();
-		tributaries.push_back(*new Tributary(k, pathOrder[k], polylines[0], factor));
+		tributaries.push_back(*new Tributary(k, pathOrder[k], polylines[0], pixelsPerTrib[k]/3));
 	}
 
-	tributaries[16].addTributaryEnd(tributaries[17]);
-	tributaries[30].addTributaryEnd(tributaries[26]);
-	tributaries[30].addTributaryEnd(tributaries[28]);
-
-	int erase[] = { 17, 26, 28 }; //, 29, 30, 31, 32, 37, 40};
-
-	for (int i = 2; i >= 0; i--) {
-		tributaries.erase(tributaries.begin() + erase[i]);
-	}
-
+	//////// SET GROUP
 	for (int i = 0; i < tributaries.size(); i++) {
 		tributaries[i].setGroup(i);
 	}
 
-	pulsing = true;
-	setRandomPulse(40, 2, 30); // millis, packet size, separation
 
-	float totalLEDs = 0;
-	float totalCentimeters = 0;
-	for (int i = 0; i < tributaries.size(); i++) {
-		totalLEDs += tributaries[i].pixels.size();
-		totalCentimeters += tributaries[i].len;
-	}
-	float dmxLEDs = totalLEDs * 3;
-	float divideByUniverses = dmxLEDs / 8;
-
-	cout << "total meters: ";
-	cout << totalCentimeters / 100 << endl;
-	cout << "total LEDs: ";
-	cout << totalLEDs << endl;
-	cout << "total DMX channels: ";
-	cout << dmxLEDs << endl;
-	///////////////////////////////////////
-
+	/////// DEPRECATED
+	//pulsing = true;
+	//setRandomPulse(40, 2, 30); // millis, packet size, separation
 }
 
 //--------------------------------------------------------------
@@ -240,24 +302,16 @@ void ofApp::updateSimulation() {
 
 //--------------------------------------------------------------
 void ofApp::drawSimulation() {
-	ofSetColor(220);
-	ofDrawRectangle(0, 0, 33 * 30.48, 17 * 30.48);
-	//int erase[] = { 29, 30, 31, 32, 37, 40 };
-	/*int offset = ofGetElapsedTimeMillis() / 1000;
-	ofColor c1 = ofColor::fromHsb(offset % 255, 255, 255);
-	ofColor c2 = ofColor::fromHsb((offset + 120) % 255, 255, 255);*/
 	if (numTracked < 5) {
-		pulseGradient(numSelect);
-		//drawGlitch(ofGetMouseX(), ofGetMouseY(), 60, ofColor(0, 0, 0));
-
-		// purple orange glitch
-		
+		if (transitioning) pulseGradientTransition(numSelect);
+		else pulseGradient(numSelect);
 		drawGlitch(ofGetMouseX(), ofGetMouseY(), 60, glitchColors[0], glitchColors[1], glitchColors[2], glitchColors[3]);
+		//drawTributary(4);
 	}
 	else {
 		glitchOut();
 	}
-	//glitchOut();
+
 }
 
 //--------------------------------------------------------------
@@ -269,12 +323,23 @@ void ofApp::setRandomPulse(int ms, int ps, int sep) {
 	}
 }
 
+void ofApp::drawTributary(int ind) {
+	int trib = (int(ofGetElapsedTimef())/2) % tributaries.size();
+	for (int i = 0; i < tributaries.size(); i++) {
+		if (i < 15) {
+			//tributaries[i].draw(ofColor::fromHsb((i*30)% 255, 255, 255));
+			//tributaries[i].draw(ofColor(255, 0, 0));
+		}
+		else tributaries[i].draw(ofColor(0, 0, 0));
+	}
+}
+
 void ofApp::pulseGradient(int num) {
 	for (int i = 0; i < tributaries.size(); i++) {
 		//tributaries[i].pulseDraw();
 		//tributaries[i].draw(ofColor(255, 255, 0));
 		//tributaries[i].drawGradient(ofColor::fromHsb((ofGetElapsedTimeMillis()/100) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis()/100) + 120) % 255, 255, 255));
-		
+
 
 		if (num == 2) tributaries[i].pulseGradient(gradientColors[0], gradientColors[1]);
 		else if (num == 3) tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2]);
@@ -282,7 +347,7 @@ void ofApp::pulseGradient(int num) {
 		else if (num == 9)  tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2], gradientColors[3]);
 
 
-	    
+
 	}
 }
 
@@ -306,7 +371,7 @@ void ofApp::glitchOut() {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
-	// When key stroke, send the DMX frame (dmxData) which is 512 Bytes long over artnet to the specified IP (Here GrandMA)  
+	// When key stroke, send the DMX frame (dmxData) which is 512 Bytes long over artnet to the specified IP (Here GrandMA)
 }
 
 //--------------------------------------------------------------
@@ -358,44 +423,48 @@ void ofApp::gotMessage(ofMessage msg) {
 void ofApp::dragEvent(ofDragInfo dragInfo) {
 
 }
-void ofApp::initButtons() {
-	numSelect = 9;
-	buttons.setup(); // this sets up the events etc..
+//void ofApp::initButtons() {
+//	numSelect = 9;
+//	buttons.setup(); // this sets up the events etc..
+//
+//	ButtonPanel * panel0 = buttons.addButtonPanel("Num Colors  ");
+//	panel0->addSelectionItem("2", 2, numSelect);
+//	panel0->addSelectionItem("3", 3, numSelect);
+//	panel0->addSelectionItem("4", 4, numSelect);
+//	panel0->addSelectionItem("9", 9, numSelect);
+//
+//	ButtonPanel * panel1 = buttons.addButtonPanel("  Colors 1-4   ");
+//	for (int i = 0; i < 4; i++) {
+//		panel1->addListItem("Color " + to_string(i + 1));
+//		panel1->addSliderItem("R", 0, 255, storedColors[i][0]);
+//		panel1->addSliderItem("G", 0, 255, storedColors[i][1]);
+//		panel1->addSliderItem("B", 0, 255, storedColors[i][2]);
+//	}
+//	ButtonPanel * panel2 = buttons.addButtonPanel("  Colors 5-9  ");
+//	for (int i = 4; i < 9; i++) {
+//		panel2->addListItem("Color " + to_string(i));
+//		panel2->addSliderItem("R", 0, 255, storedColors[i][0]);
+//		panel2->addSliderItem("G", 0, 255, storedColors[i][1]);
+//		panel2->addSliderItem("B", 0, 255, storedColors[i][2]);
+//	}
+//	ButtonPanel * panel3 = buttons.addButtonPanel("  Set Mode  ");
+//	panel3->addSelectionItem("Icey", 0, modeSelect);
+//	panel3->addSelectionItem("Rainbow Sherbert", 1, modeSelect);
+//	panel3->addSelectionItem("Icey Sherbert", 2, modeSelect);
+//	panel3->addSelectionItem("Green Ice", 3, modeSelect);
+//	panel3->addSelectionItem("Original 9", 4, modeSelect);
+//
+//	ButtonPanel * panel4 = buttons.addButtonPanel("  Glitch Colors  ");
+//	for (int i = 0; i < 4; i++) {
+//		panel4->addListItem("Color " + to_string(i + 1));
+//		panel4->addSliderItem("R", 0, 255, storedGlitchColors[i][0]);
+//		panel4->addSliderItem("G", 0, 255, storedGlitchColors[i][1]);
+//		panel4->addSliderItem("B", 0, 255, storedGlitchColors[i][2]);
+//	}
+//}
 
-	ButtonPanel * panel0 = buttons.addButtonPanel("Num Colors  ");
-	panel0->addSelectionItem("2", 2, numSelect);
-	panel0->addSelectionItem("3", 3, numSelect);
-	panel0->addSelectionItem("4", 4, numSelect);
-	panel0->addSelectionItem("9", 9, numSelect);
+void ofApp::transitionColors() {
 
-	ButtonPanel * panel1 = buttons.addButtonPanel("  Colors 1-4   ");
-	for (int i = 0; i < 4; i++) {
-		panel1->addListItem("Color " + to_string(i + 1));
-		panel1->addSliderItem("R", 0, 255, storedColors[i][0]);
-		panel1->addSliderItem("G", 0, 255, storedColors[i][1]);
-		panel1->addSliderItem("B", 0, 255, storedColors[i][2]);
-	}
-	ButtonPanel * panel2 = buttons.addButtonPanel("  Colors 5-9  ");
-	for (int i = 4; i < 9; i++) {
-		panel2->addListItem("Color " + to_string(i));
-		panel2->addSliderItem("R", 0, 255, storedColors[i][0]);
-		panel2->addSliderItem("G", 0, 255, storedColors[i][1]);
-		panel2->addSliderItem("B", 0, 255, storedColors[i][2]);
-	}
-	ButtonPanel * panel3 = buttons.addButtonPanel("  Set Mode  ");
-	panel3->addSelectionItem("Icey", 0, modeSelect);
-	panel3->addSelectionItem("Rainbow Sherbert", 1, modeSelect);
-	panel3->addSelectionItem("Icey Sherbert", 2, modeSelect);
-	panel3->addSelectionItem("Green Ice", 3, modeSelect);
-	panel3->addSelectionItem("Original 9", 4, modeSelect);
-
-	ButtonPanel * panel4 = buttons.addButtonPanel("  Glitch Colors  ");
-	for (int i = 0; i < 4; i++) {
-		panel4->addListItem("Color " + to_string(i + 1));
-		panel4->addSliderItem("R", 0, 255, storedGlitchColors[i][0]);
-		panel4->addSliderItem("G", 0, 255, storedGlitchColors[i][1]);
-		panel4->addSliderItem("B", 0, 255, storedGlitchColors[i][2]);
-	}
 }
 
 void ofApp::setMode() {
@@ -403,7 +472,7 @@ void ofApp::setMode() {
 	modeDuration = int(ofRandom(45, 120));
 	modeTime = ofGetElapsedTimef();
 	if (modeSelect >= 0) {
-		
+
 		if (modeSelect == 0) {
 			// icey
 			numSelect = 4;
@@ -480,12 +549,12 @@ void ofApp::setMode() {
 			numSelect = 4;
 			gradientColors[0] = ofColor(210, 166, 194);
 			gradientColors[1] = ofColor(78, 224, 151);
-			gradientColors[2] = ofColor(220,255, 255);
+			gradientColors[2] = ofColor(220, 255, 255);
 			gradientColors[3] = ofColor(253, 252, 42);
-			
-			glitchColors[0] = ofColor(92, 35,73);
-			glitchColors[1] = ofColor(55, 3,179);
-			glitchColors[2] = ofColor(123, 114,147);
+
+			glitchColors[0] = ofColor(92, 35, 73);
+			glitchColors[1] = ofColor(55, 3, 179);
+			glitchColors[2] = ofColor(123, 114, 147);
 			glitchColors[3] = ofColor(232, 238, 155);
 			setStoredColors();
 		}
@@ -520,13 +589,13 @@ void ofApp::setMode() {
 		else if (modeSelect == 8) {
 			numSelect = 4;
 			//winter cherry blossom 
-			gradientColors[0] = ofColor(255, 0,0 );
+			gradientColors[0] = ofColor(255, 0, 0);
 			gradientColors[1] = ofColor(0, 255, 255);
 			gradientColors[2] = ofColor(255, 235, 137);
 			gradientColors[3] = ofColor(255, 0, 121);
 
 			glitchColors[0] = ofColor(51, 43, 16);
-			glitchColors[1] = ofColor(221, 71,80);
+			glitchColors[1] = ofColor(221, 71, 80);
 			glitchColors[2] = ofColor(67, 68, 34);
 			glitchColors[3] = ofColor(104, 91, 207);
 			setStoredColors();
@@ -534,10 +603,10 @@ void ofApp::setMode() {
 		else if (modeSelect == 9) {
 			numSelect = 4;
 			//Rasta Hail Selassie
-			gradientColors[0] = ofColor(255,255 , 89);
+			gradientColors[0] = ofColor(255, 255, 89);
 			gradientColors[1] = ofColor(242, 254, 0);
 			gradientColors[2] = ofColor(0, 254, 0);
-			gradientColors[3] = ofColor(255, 0, 0z);
+			gradientColors[3] = ofColor(255, 0, 0);
 
 			glitchColors[0] = ofColor(24, 16, 86);
 			glitchColors[1] = ofColor(29, 24, 43);
@@ -563,12 +632,12 @@ void ofApp::setMode() {
 			numSelect = 4;
 			//peaches and cream
 			gradientColors[0] = ofColor(255, 178, 183);
-			gradientColors[1] = ofColor(252, 255,192);
+			gradientColors[1] = ofColor(252, 255, 192);
 			gradientColors[2] = ofColor(251, 251, 227);
 			gradientColors[3] = ofColor(254, 227, 207);
 
 			glitchColors[0] = ofColor(91, 16, 34);
-			glitchColors[1] = ofColor(126, 46,131);
+			glitchColors[1] = ofColor(126, 46, 131);
 			glitchColors[2] = ofColor(29, 124, 64);
 			glitchColors[3] = ofColor(48, 68, 92);
 			setStoredColors();
@@ -593,11 +662,11 @@ void ofApp::setMode() {
 			gradientColors[0] = ofColor(204, 255, 204);
 			gradientColors[1] = ofColor(255, 255, 102);
 			gradientColors[2] = ofColor(235, 202, 255);
-			
+
 
 			glitchColors[0] = ofColor(82, 108, 197);
 			glitchColors[1] = ofColor(197, 114, 192);
-			glitchColors[2] = ofColor(231, 270,233);
+			glitchColors[2] = ofColor(231, 270, 233);
 			glitchColors[3] = ofColor(11, 160, 209);
 			setStoredColors();
 		}
@@ -607,7 +676,7 @@ void ofApp::setMode() {
 			gradientColors[0] = ofColor(255, 141, 158);
 			gradientColors[1] = ofColor(57, 252, 255);
 			gradientColors[2] = ofColor(82, 131, 219);
-			gradientColors[3] = ofColor(174, 162, 164 );
+			gradientColors[3] = ofColor(174, 162, 164);
 
 			glitchColors[0] = ofColor(19, 84, 43);
 			glitchColors[1] = ofColor(40, 12, 25);
@@ -646,7 +715,7 @@ void ofApp::setMode() {
 		else if (modeSelect == 17) {
 			numSelect = 4;
 			//fire in the sky
-			gradientColors[0] = ofColor(255,255, 55);
+			gradientColors[0] = ofColor(255, 255, 55);
 			gradientColors[1] = ofColor(255, 65, 67);
 			gradientColors[2] = ofColor(234, 235, 255);
 			gradientColors[3] = ofColor(255, 61, 250);
@@ -663,7 +732,7 @@ void ofApp::setMode() {
 			gradientColors[0] = ofColor(155, 124, 132);
 			gradientColors[1] = ofColor(205, 255, 247);
 			gradientColors[2] = ofColor(255, 169, 255);
-			
+
 
 			glitchColors[0] = ofColor(255, 19, 0);
 			glitchColors[1] = ofColor(55, 30, 179);
@@ -677,7 +746,7 @@ void ofApp::setMode() {
 			gradientColors[0] = ofColor(241, 184, 233);
 			gradientColors[1] = ofColor(153, 179, 207);
 			gradientColors[2] = ofColor(224, 234, 39);
-			
+
 
 			glitchColors[0] = ofColor(51, 43, 16);
 			glitchColors[1] = ofColor(221, 71, 80);
@@ -703,7 +772,7 @@ void ofApp::setMode() {
 			numSelect = 4;
 			//icey bayou
 			gradientColors[0] = ofColor(0, 221, 255);
-			gradientColors[1] = ofColor(255, 255, 0 );
+			gradientColors[1] = ofColor(255, 255, 0);
 			gradientColors[2] = ofColor(79, 255, 253);
 			gradientColors[3] = ofColor(0, 249, 11);
 
@@ -737,7 +806,7 @@ void ofApp::setMode() {
 
 			glitchColors[0] = ofColor(66, 61, 173);
 			glitchColors[1] = ofColor(69, 191, 100);
-			glitchColors[2] = ofColor(42,25, 33);
+			glitchColors[2] = ofColor(42, 25, 33);
 			glitchColors[3] = ofColor(188, 36, 104);
 			setStoredColors();
 		}
@@ -845,7 +914,7 @@ void ofApp::setMode() {
 			gradientColors[0] = ofColor(255, 104, 169);
 			gradientColors[1] = ofColor(255, 156, 58);
 			gradientColors[2] = ofColor(148, 255, 134);
-			
+
 
 			glitchColors[0] = ofColor(223, 158, 234);
 			glitchColors[1] = ofColor(144, 67, 240);
@@ -870,7 +939,7 @@ void ofApp::setMode() {
 		else if (modeSelect == 33) {
 			numSelect = 4;
 			//new orleans jazz
-			gradientColors[0] = ofColor(147, 255, 183;
+			gradientColors[0] = ofColor(147, 255, 183);
 			gradientColors[1] = ofColor(242, 255, 192);
 			gradientColors[2] = ofColor(139, 231, 211);
 			gradientColors[3] = ofColor(155, 125, 207);
@@ -958,7 +1027,7 @@ void ofApp::setMode() {
 			gradientColors[0] = ofColor(255, 104, 28);
 			gradientColors[1] = ofColor(255, 255, 58);
 			gradientColors[2] = ofColor(148, 255, 255);
-			
+
 
 			glitchColors[0] = ofColor(223, 158, 234);
 			glitchColors[1] = ofColor(237, 237, 240);
@@ -1044,7 +1113,7 @@ void ofApp::setMode() {
 			gradientColors[0] = ofColor(177, 122, 175);
 			gradientColors[1] = ofColor(114, 215, 251);
 			gradientColors[2] = ofColor(234, 148, 61);
-		
+
 
 			glitchColors[0] = ofColor(255, 255, 0);
 			glitchColors[1] = ofColor(55, 233, 179);
@@ -1057,7 +1126,7 @@ void ofApp::setMode() {
 			// split compliment sky
 			numSelect = 4;
 			gradientColors[0] = ofColor(106, 223, 205);
-			gradientColors[1] = ofColor(153,133 , 255);
+			gradientColors[1] = ofColor(153, 133, 255);
 			gradientColors[2] = ofColor(204, 110, 229);
 			gradientColors[2] = ofColor(204, 249, 255);
 
@@ -1113,7 +1182,7 @@ void ofApp::setMode() {
 		else if (modeSelect == 50) {
 			numSelect = 4;
 			//new orleans jazz vibrant
-			gradientColors[0] = ofColor(74, 255, 107;
+			gradientColors[0] = ofColor(74, 255, 107);
 			gradientColors[1] = ofColor(178, 255, 218);
 			gradientColors[2] = ofColor(138, 255, 212);
 			gradientColors[3] = ofColor(117, 138, 255);
@@ -1166,7 +1235,7 @@ void ofApp::setMode() {
 			glitchColors[2] = ofColor(124, 25, 147);
 			glitchColors[3] = ofColor(34, 21, 64);
 			setStoredColors();
-	}
+		}
 		else if (modeSelect == 54) {
 			numSelect = 4;
 			//orange skyline
@@ -1331,14 +1400,24 @@ void ofApp::setMode() {
 			glitchColors[3] = ofColor(45, 24, 37);
 			setStoredColors();
 		}
+	}
+	modeSelect = -1;
 }
 
 void ofApp::changeMode() {
-	if (ofGetElapsedTimef() < modeTime) 
-	if (ofGetElapsedTimef() > modeTime + modeDuration) {
+	if (ofGetElapsedTimef() < modeTime) modeTime = 0;
+	else if (ofGetElapsedTimef() > modeTime + modeDuration) {
+		modeSelect = int(ofRandom(46));
+		modeTime = ofGetElapsedTimef();
+		modeDuration = int(ofRandom(45, 120));
+		setMode();
+
 	}
 }
+
 void ofApp::initColors() {
+	transitioning = false;
+	numSelect = 4;
 	gradientColors[0] = ofColor(153, 153, 255);
 	gradientColors[1] = ofColor(178, 102, 255);
 	gradientColors[2] = ofColor(255, 51, 255);

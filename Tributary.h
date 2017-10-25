@@ -13,18 +13,18 @@
 #include "Pixel.h"
 
 class Tributary {
-    
+
 public:
-    
+
     void setup(ofPolyline p, float factor);
     void update();
     void draw();
     void draw(ofColor c);
     void drawPixel(int index, ofColor c);
     void drawLabel(ofPoint vert);
-    
+
     void addTributaryEnd(Tributary t);
-    
+
     void setRandomPulse(int packetSize, int separation);
 	void setGroup(int g);
     void pulseDraw();
@@ -48,9 +48,9 @@ public:
 
     bool inPulse(int index);
     bool inRadius(int index, ofPoint person, float r);
-    
+
    // vector<ofPoint> getPoints();
-    
+
 	unsigned long lastChecked;
     int id;
     int repeat;
@@ -64,17 +64,23 @@ public:
     int originalOrder;
 	int group;
 	ofColor glitchColor;
-    
+
     vector<Pixel> pixels;
     const unsigned char *data512;
-    
-    
+
+    // transitioning
+    boolean transitioning;
+    int startOffset;
+    ofColor getWrapGradient(int ind, int totalInd, int num, ofColor[] gradients);
+    void pulseGradient(int num, ofColor[] gradients);
+
+
     Tributary();
     Tributary(int i, int orig, ofPolyline p, float f);
-    
+
 
 private:
-    
+
 };
 
 #endif /* Tributary_h */
