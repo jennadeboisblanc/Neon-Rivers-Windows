@@ -82,4 +82,9 @@ class ofApp : public ofBaseApp{
 		void initColors();
 		void setStoredColors();
 		void setGradientColors();
+
+		// change mode
+		void changeMode();
+		float modeTime;
+		int modeDuration;
 };
