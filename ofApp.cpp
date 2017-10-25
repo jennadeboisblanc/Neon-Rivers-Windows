@@ -315,6 +315,12 @@ void ofApp::drawSimulation() {
 }
 
 //--------------------------------------------------------------
+void ofApp::pulseGradientTransition(int num) {
+	for (int i = 0; i < tributaries.size(); i++) {
+		tributaries[i].pulseGradientTransition(num, gradientColors);
+	}
+}
+
 void ofApp::setRandomPulse(int ms, int ps, int sep) {
 	pulsing = true;
 	pulseTime = ms;
@@ -341,10 +347,11 @@ void ofApp::pulseGradient(int num) {
 		//tributaries[i].drawGradient(ofColor::fromHsb((ofGetElapsedTimeMillis()/100) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis()/100) + 120) % 255, 255, 255));
 
 
-		if (num == 2) tributaries[i].pulseGradient(gradientColors[0], gradientColors[1]);
-		else if (num == 3) tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2]);
-		else if (num == 4)  tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2], gradientColors[3]);
-		else if (num == 9)  tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2], gradientColors[3]);
+		//if (num == 2) tributaries[i].pulseGradient(gradientColors[0], gradientColors[1]);
+		//else if (num == 3) tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2]);
+		//else if (num == 4)  tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2], gradientColors[3]);
+		//else if (num == 9)  tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2], gradientColors[3]);
+		tributaries[i].pulseGradient(num, gradientColors);
 
 
 
@@ -469,7 +476,8 @@ void ofApp::transitionColors() {
 
 void ofApp::setMode() {
 	// this mode will last between 45s and 2min
-	modeDuration = int(ofRandom(45, 120));
+	//modeDuration = int(ofRandom(45, 120));
+	modeDuration = 5;
 	modeTime = ofGetElapsedTimef();
 	if (modeSelect >= 0) {
 
@@ -1407,11 +1415,10 @@ void ofApp::setMode() {
 void ofApp::changeMode() {
 	if (ofGetElapsedTimef() < modeTime) modeTime = 0;
 	else if (ofGetElapsedTimef() > modeTime + modeDuration) {
-		modeSelect = int(ofRandom(46));
+		modeSelect = int(ofRandom(64));
 		modeTime = ofGetElapsedTimef();
 		modeDuration = int(ofRandom(45, 120));
 		setMode();
-
 	}
 }
 

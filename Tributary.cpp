@@ -112,7 +112,7 @@ void Tributary::setGradientTransition() {
   startOffset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
 }
 
-void Tributary::pulseGradientTransition(int num, ofColor[] gradients) {
+void Tributary::pulseGradientTransition(int num, ofColor gradients[]) {
 	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
   if (offset - startOffset >= pixels.size()) transitioning = false;
 	else {
@@ -122,7 +122,7 @@ void Tributary::pulseGradientTransition(int num, ofColor[] gradients) {
      }
 }
 
-void Tributary::pulseGradient(int num, ofColor[] gradients) {
+void Tributary::pulseGradient(int num, ofColor gradients[]) {
 	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
 
 	for (int j = 0; j < pixels.size(); j++) {
@@ -130,153 +130,34 @@ void Tributary::pulseGradient(int num, ofColor[] gradients) {
 	}
 }
 
-void Tributary::pulseGradient(ofColor start, ofColor end) {
-	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
-
-	for (int j = 0; j < pixels.size(); j++) {
-		pixels[j].draw(get2WrapGradient(j-offset, pixels.size(), start, end));
-	}
-}
-
-void Tributary::pulseGradientY(int h, ofColor start, ofColor end) {
+/*void Tributary::pulseGradientY(int h, int num, ofColor gradients[]) {
 	int offset = (ofGetElapsedTimeMillis() / 100) % h;
 
 	for (int j = 0; j < pixels.size(); j++) {
-		pixels[j].draw(get2WrapGradient(pixels[j].getY() - offset, h, start, end));
+		pixels[j].draw(getWrapGradient(pixels[j].getY() - offset, h, num, gradients[]));
 	}
-}
+}*/
 
-void Tributary::pulseGradient(ofColor start, ofColor mid, ofColor end) {
-	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
-
-	for (int j = 0; j < pixels.size(); j++) {
-		pixels[j].draw(get3WrapGradient(j - offset, pixels.size(), start, mid, end));
-	}
-}
-
-void Tributary::pulseGradient(ofColor start, ofColor mid1, ofColor mid2, ofColor end) {
-	int offset = (ofGetElapsedTimeMillis() / 60) % pixels.size();
-
-	for (int j = 0; j < pixels.size(); j++) {
-		pixels[j].draw(get4WrapGradient(j - offset, pixels.size(), start, mid1, mid2, end));
-	}
-}
-
-void Tributary::pulseGradient(ofColor start, ofColor mid1, ofColor mid2, ofColor mid3, ofColor mid4, ofColor mid5, ofColor mid6, ofColor mid7, ofColor end) {
-	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
-
-	for (int j = 0; j < pixels.size(); j++) {
-		pixels[j].draw(get9WrapGradient(j - offset, pixels.size(), start, mid1, mid2, mid3, mid4, mid5, mid6, mid7, end));
-	}
-}
-
-ofColor Tributary::getWrapGradient(int ind, int totalInd, int num, ofColor[] gradients) {
+ofColor Tributary::getWrapGradient(int ind, int totalInd, int num, ofColor gradients[]) {
 	if (ind > totalInd) ind -= totalInd;
 	else if (ind < 0) ind += totalInd;
-  for (var i = 0; i < num; i++) {
-    if (ind < totalInd/ (num*1.0) * i) {
-      float pos = ofMap(ind, i * totalInd / (num*1.0), (i+1) * totalInd / (num*1.0), 0, 1.0);
-      if (i == num - 1) {
-        return gradients[i].lerp(gradients[0], pos);
-      }
-      else {
-        return gradients[i].lerp(gradients[i+1], pos);
-      }
-    }
-  }
+	for (int i = 0; i < num; i++) {
+		if (ind < totalInd/ (num*1.0) * (i+1)) {
+			float pos = ofMap(ind, i * totalInd / (num*1.0), (i+1) * totalInd / (num*1.0), 0, 1.0);
+			if (i == num - 1) {
+				ofColor c = gradients[i];
+				return c.lerp(gradients[0], pos);
+			}
+			else {
+				ofColor c = gradients[i];
+				return c.lerp(gradients[i+1], pos);
+			}
+		}
+	}
+	return ofColor(0);
+
 }
 
-ofColor Tributary::get2WrapGradient(int ind, int totalInd, ofColor start, ofColor end) {
-	if (ind > totalInd) ind -= totalInd;
-	else if (ind < 0) ind += totalInd;
-	if (ind > totalInd / 2) {
-		float pos = ofMap(ind, totalInd / 2, totalInd, 0, 1.0);
-		return end.lerp(start, pos);
-	}
-	else {
-		float pos = ofMap(ind, 0, totalInd / 2, 0, 1.0);
-		return start.lerp(end, pos);
-	}
-}
-
-ofColor Tributary::get3WrapGradient(int ind, int totalInd, ofColor start, ofColor mid, ofColor end) {
-	if (ind >= totalInd) ind -= totalInd;
-	else if (ind < 0) ind += totalInd;
-	if (ind < totalInd / 3.0) {
-		float pos = ofMap(ind, 0, totalInd / 3, 0, 1.0);
-		return start.lerp(mid, pos);
-	}
-	else if (ind < totalInd *2.0 / 3) {
-		float pos = ofMap(ind, totalInd/3.0, totalInd*2.0/3, 0, 1.0);
-		return mid.lerp(end, pos);
-	}
-	else {
-		float pos = ofMap(ind, totalInd*2.0/3, totalInd, 0, 1.0);
-		return end.lerp(start, pos);
-	}
-}
-
-ofColor Tributary::get4WrapGradient(int ind, int totalInd, ofColor start, ofColor mid1, ofColor mid2, ofColor end) {
-	if (ind >= totalInd) ind -= totalInd;
-	else if (ind < 0) ind += totalInd;
-	if (ind < totalInd / 4.0) {
-		float pos = ofMap(ind, 0, totalInd / 4.0, 0, 1.0);
-		return start.lerp(mid1, pos);
-	}
-	else if (ind < totalInd / 2.0) {
-		float pos = ofMap(ind, totalInd / 4.0, totalInd/2.0, 0, 1.0);
-		return mid1.lerp(mid2, pos);
-	}
-	else if (ind < totalInd *3.0 / 4) {
-		float pos = ofMap(ind, totalInd / 2.0, totalInd*3.0 / 4, 0, 1.0);
-		return mid2.lerp(end, pos);
-	}
-	else {
-		float pos = ofMap(ind, totalInd*3.0 / 4, totalInd, 0, 1.0);
-		return end.lerp(start, pos);
-	}
-}
-
-ofColor Tributary::get9WrapGradient(int ind, int totalInd, ofColor start, ofColor mid1, ofColor mid2, ofColor mid3, ofColor mid4, ofColor mid5, ofColor mid6, ofColor mid7, ofColor end) {
-	if (ind >= totalInd) ind -= totalInd;
-	else if (ind < 0) ind += totalInd;
-	if (ind < totalInd / 9.0) {
-		float pos = ofMap(ind, 0, totalInd / 9.0, 0, 1.0);
-		return start.lerp(mid1, pos);
-	}
-	else if (ind < totalInd * 2.0 / 9.0) {
-		float pos = ofMap(ind, totalInd / 9.0, totalInd * 2.0 / 9.0, 0, 1.0);
-		return mid1.lerp(mid2, pos);
-	}
-	else if (ind < totalInd *3.0 / 9.0) {
-		float pos = ofMap(ind, totalInd * 2.0/9.0, totalInd*3.0 /9, 0, 1.0);
-		return mid2.lerp(mid3, pos);
-	}
-	else if (ind < totalInd *4.0 / 9.0) {
-		float pos = ofMap(ind, totalInd * 3.0 / 9.0, totalInd*4.0 / 9, 0, 1.0);
-		return mid3.lerp(mid4, pos);
-	}
-	else if (ind < totalInd *5.0 / 9.0) {
-		float pos = ofMap(ind, totalInd * 4.0 / 9.0, totalInd*5.0 / 9, 0, 1.0);
-		return mid4.lerp(mid5, pos);
-	}
-	else if (ind < totalInd *6.0 / 9.0) {
-		float pos = ofMap(ind, totalInd * 5.0 / 9.0, totalInd*6.0 / 9, 0, 1.0);
-		return mid5.lerp(mid6, pos);
-	}
-	else if (ind < totalInd *7.0 / 9.0) {
-		float pos = ofMap(ind, totalInd * 6.0 / 9.0, totalInd*7.0 / 9, 0, 1.0);
-		return mid6.lerp(mid7, pos);
-	}
-	else if (ind < totalInd *8.0 / 9.0) {
-		float pos = ofMap(ind, totalInd * 7.0 / 9.0, totalInd*8.0 / 9, 0, 1.0);
-		return mid7.lerp(end, pos);
-	}
-	else {
-		float pos = ofMap(ind, totalInd*8.0 / 9, totalInd, 0, 1.0);
-		return end.lerp(start, pos);
-	}
-}
 
 void Tributary::pulseDraw(){
     ofPoint person;
