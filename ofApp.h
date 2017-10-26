@@ -92,5 +92,6 @@ class ofApp : public ofBaseApp{
 		ofColor previousColors[9];
 		void transitionColors();
 		void pulseGradientTransition(int num);
-
+		bool checkTransitioning();
+		void startTransitioning();
 };

@@ -61,10 +61,14 @@ public:
     // transitioning
     bool transitioning;
     int startOffset;
+	int iterateNum;
+	int lastOffset;
+	int offset;
     ofColor getWrapGradient(int ind, int totalInd, int num, ofColor gradients[]);
-    void pulseGradient(int num, ofColor gradients[]);
+    void pulseGradient(int num, ofColor prevGradients[], ofColor gradients[]);
 	void setGradientTransition();
-	void pulseGradientTransition(int num, ofColor gradients[]);
+	void updateGradientPulse();
+	ofColor getTransitionGradient(int ind, int num, ofColor gradients[], ofColor prevGradients[]);
 
     Tributary();
     Tributary(int i, int orig, ofPolyline p, float f);

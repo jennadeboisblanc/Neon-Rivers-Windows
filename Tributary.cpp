@@ -109,30 +109,35 @@ void Tributary::drawGradient(ofColor start, ofColor end) {
 
 void Tributary::setGradientTransition() {
 	transitioning = true;
-  startOffset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
+	lastOffset = 0;
+	iterateNum = 0;
+	startOffset = 0;
 }
 
-void Tributary::pulseGradientTransition(int num, ofColor gradients[]) {
-	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
-  if (offset - startOffset >= pixels.size()) transitioning = false;
+
+void Tributary::updateGradientPulse() {
+	if (transitioning) {
+		startOffset += 2;
+		if (startOffset >= pixels.size()) transitioning = false;
+	}
+	offset += 2;
+}
+
+void Tributary::pulseGradient(int num, ofColor prevGradients[], ofColor gradients[]) {
+	updateGradientPulse();
+	if (transitioning) {
+		for (int j = 0; j < pixels.size(); j++) {
+			pixels[j].draw(getTransitionGradient(j, num, prevGradients, gradients));
+		}
+	}
 	else {
-    for (int j = 0; j < pixels.size(); j++) {
-		    pixels[j].draw(getWrapGradient(j-offset, pixels.size(), num, gradients));
-	     }
-     }
-}
-
-void Tributary::pulseGradient(int num, ofColor gradients[]) {
-	int offset = (ofGetElapsedTimeMillis() / 100) % pixels.size();
-
-	for (int j = 0; j < pixels.size(); j++) {
-		pixels[j].draw(getWrapGradient(j-offset, pixels.size(), num, gradients));
+		for (int j = 0; j < pixels.size(); j++) {
+			pixels[j].draw(getWrapGradient(j - (offset%pixels.size()), pixels.size(), num, gradients));
+		}
 	}
 }
 
 /*void Tributary::pulseGradientY(int h, int num, ofColor gradients[]) {
-	int offset = (ofGetElapsedTimeMillis() / 100) % h;
-
 	for (int j = 0; j < pixels.size(); j++) {
 		pixels[j].draw(getWrapGradient(pixels[j].getY() - offset, h, num, gradients[]));
 	}
@@ -156,6 +161,17 @@ ofColor Tributary::getWrapGradient(int ind, int totalInd, int num, ofColor gradi
 	}
 	return ofColor(0);
 
+}
+
+ofColor Tributary::getTransitionGradient(int ind, int num,  ofColor prevGradients[], ofColor gradients[]) {
+	if (ind > startOffset) {
+		return getWrapGradient(ind - (offset%pixels.size()), pixels.size(), num, prevGradients);
+		//return ofColor(0, 0, 255);
+	}
+	else {
+		//return ofColor(255, 0, 0);
+		return getWrapGradient(ind - (offset%pixels.size()), pixels.size(), num, gradients);
+	}
 }
 
 

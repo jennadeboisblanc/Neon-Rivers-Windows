@@ -303,8 +303,7 @@ void ofApp::updateSimulation() {
 //--------------------------------------------------------------
 void ofApp::drawSimulation() {
 	if (numTracked < 5) {
-		if (transitioning) pulseGradientTransition(numSelect);
-		else pulseGradient(numSelect);
+		pulseGradient(numSelect);
 		drawGlitch(ofGetMouseX(), ofGetMouseY(), 60, glitchColors[0], glitchColors[1], glitchColors[2], glitchColors[3]);
 		//drawTributary(4);
 	}
@@ -315,11 +314,6 @@ void ofApp::drawSimulation() {
 }
 
 //--------------------------------------------------------------
-void ofApp::pulseGradientTransition(int num) {
-	for (int i = 0; i < tributaries.size(); i++) {
-		tributaries[i].pulseGradientTransition(num, gradientColors);
-	}
-}
 
 void ofApp::setRandomPulse(int ms, int ps, int sep) {
 	pulsing = true;
@@ -342,19 +336,7 @@ void ofApp::drawTributary(int ind) {
 
 void ofApp::pulseGradient(int num) {
 	for (int i = 0; i < tributaries.size(); i++) {
-		//tributaries[i].pulseDraw();
-		//tributaries[i].draw(ofColor(255, 255, 0));
-		//tributaries[i].drawGradient(ofColor::fromHsb((ofGetElapsedTimeMillis()/100) % 255, 255, 255), ofColor::fromHsb(((ofGetElapsedTimeMillis()/100) + 120) % 255, 255, 255));
-
-
-		//if (num == 2) tributaries[i].pulseGradient(gradientColors[0], gradientColors[1]);
-		//else if (num == 3) tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2]);
-		//else if (num == 4)  tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2], gradientColors[3]);
-		//else if (num == 9)  tributaries[i].pulseGradient(gradientColors[0], gradientColors[1], gradientColors[2], gradientColors[3]);
-		tributaries[i].pulseGradient(num, gradientColors);
-
-
-
+		tributaries[i].pulseGradient(num, previousColors, gradientColors);
 	}
 }
 
@@ -470,15 +452,31 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
 //	}
 //}
 
-void ofApp::transitionColors() {
+bool ofApp::checkTransitioning() {
+	for (int i = 0; i < tributaries.size(); i++) {
+		if (tributaries[i].transitioning) return true;
+	}
+	return false;
+}
 
+void ofApp::startTransitioning() {
+	for (int i = 0; i < tributaries.size(); i++) {
+		tributaries[i].setGradientTransition();
+	}
 }
 
 void ofApp::setMode() {
 	// this mode will last between 45s and 2min
-	//modeDuration = int(ofRandom(45, 120));
-	modeDuration = 5;
-	modeTime = ofGetElapsedTimef();
+	previousColors[0] = gradientColors[0];
+	previousColors[1] = gradientColors[1];
+	previousColors[2] = gradientColors[2];
+	previousColors[3] = gradientColors[3];
+	previousColors[4] = gradientColors[4];
+	previousColors[5] = gradientColors[5];
+	previousColors[6] = gradientColors[6];
+	previousColors[7] = gradientColors[7];
+	previousColors[8] = gradientColors[8];
+
 	if (modeSelect >= 0) {
 
 		if (modeSelect == 0) {
@@ -1414,10 +1412,12 @@ void ofApp::setMode() {
 
 void ofApp::changeMode() {
 	if (ofGetElapsedTimef() < modeTime) modeTime = 0;
-	else if (ofGetElapsedTimef() > modeTime + modeDuration) {
+	else if (ofGetElapsedTimef() > modeTime + modeDuration && !checkTransitioning()) {
 		modeSelect = int(ofRandom(64));
 		modeTime = ofGetElapsedTimef();
 		modeDuration = int(ofRandom(45, 120));
+		//modeDuration = 10;
+		startTransitioning();
 		setMode();
 	}
 }
