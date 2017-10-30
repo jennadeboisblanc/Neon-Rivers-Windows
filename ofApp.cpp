@@ -22,15 +22,20 @@ void ofApp::setup() {
 	setupKinect();
 	ofSetWindowShape(previewWidth * 2, previewHeight * 2);
 	numTracked = 0;
+
+	bool connected = tcpClient.setup("10.206.231.233", 5204);
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	if (tcpClient.isConnected()) {
+		string str = tcpClient.receive(); // did anything come in
+	}
 	setDMXTributaries();
 	changeMode();
 	//updateSkeleton();
 	for (int i = 0; i < 8; i++) {
-		anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
+		//anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
 	}
 }
 
@@ -360,7 +365,9 @@ void ofApp::glitchOut() {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
-	// When key stroke, send the DMX frame (dmxData) which is 512 Bytes long over artnet to the specified IP (Here GrandMA)
+	if (tcpClient.isConnected()) {
+		tcpClient.send("HELLO WORLD!");
+	}
 }
 
 //--------------------------------------------------------------

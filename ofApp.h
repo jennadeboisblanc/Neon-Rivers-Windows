@@ -5,6 +5,7 @@
 #include "ofxSvg.h"
 #include "ofxArtnet.h"
 #include "Tributary.h"
+#include "ofxNetwork.h"
 //#include "ofxButtons.h"
 
 enum {
@@ -88,10 +89,13 @@ class ofApp : public ofBaseApp{
 		void setGradientColors();
 
 		// transitioning
-		boolean transitioning;
+		bool transitioning;
 		ofColor previousColors[9];
 		void transitionColors();
 		void pulseGradientTransition(int num);
 		bool checkTransitioning();
 		void startTransitioning();
+
+		// connect to Pi
+		ofxTCPClient tcpClient;
 };
