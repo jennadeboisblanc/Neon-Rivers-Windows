@@ -104,6 +104,11 @@ void ofApp::draw() {
 	drawSimulation();
 	//drawKinect();
 
+	for (int )
+	for (int i = 0; i < tributaries.size(); i++) {
+		tributaries[i].drawInRadius(x, y, 100, ofColor(0, 0, 0));
+	}
+
 }
 void ofApp::playShow() {
 	//if ()
