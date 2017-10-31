@@ -8,11 +8,6 @@
 #include "ofxNetwork.h"
 //#include "ofxButtons.h"
 
-enum {
-	COLOR_RED,
-	COLOR_GREEN,
-	COLOR_BLUE
-};
 
 class ofApp : public ofBaseApp{
 
@@ -98,4 +93,6 @@ class ofApp : public ofBaseApp{
 
 		// connect to Pi
 		ofxTCPClient tcpClient;
+		void get2ndKinect();
+		float unpackFloat(const void *buf, int *i);
 };

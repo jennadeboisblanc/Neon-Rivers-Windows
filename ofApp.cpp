@@ -28,14 +28,12 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (tcpClient.isConnected()) {
-		string str = tcpClient.receive(); // did anything come in
-	}
+	get2ndKinect();
 	setDMXTributaries();
 	changeMode();
 	//updateSkeleton();
 	for (int i = 0; i < 8; i++) {
-		//anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
+		anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
 	}
 }
 
@@ -1470,4 +1468,31 @@ void ofApp::setStoredColors() {
 		storedGlitchColors[i][1] = glitchColors[i].g;
 		storedGlitchColors[i][2] = glitchColors[i].b;
 	}
+}
+
+void ofApp::get2ndKinect() {
+	unsigned char buffer[12];
+	tcpClient.receiveRawBytes((char*)&buffer[0], 12);
+	int i = 0;
+	float x = unpackFloat(&buffer[i], &i);
+	float y = unpackFloat(&buffer[i], &i);
+	float z = unpackFloat(&buffer[i], &i);
+	cout << x << ", " << y << ", " << z << endl;
+}
+
+// unpack method for retrieving data in network byte,
+//   big endian, order (MSB first)
+// increments index i by the number of bytes unpacked
+// usage:
+//
+float ofApp::unpackFloat(const void *buf, int *i) {
+	const unsigned char *b = (const unsigned char *)buf;
+	uint32_t temp = 0;
+	*i += 4;
+	temp = ((b[0] << 24) |
+		(b[1] << 16) |
+		(b[2] << 8) |
+		b[3]);
+	// why was this originally returning a pointer to temp??
+	return (float)temp;
 }
