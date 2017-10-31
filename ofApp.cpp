@@ -23,7 +23,7 @@ void ofApp::setup() {
 	ofSetWindowShape(previewWidth * 2, previewHeight * 2);
 	numTracked = 0;
 
-	bool connected = tcpClient.setup("10.206.231.233", 5204);
+	//bool connected = tcpClient.setup("10.206.231.233", 5204);
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 3; j++) {
 			kinect2Users[i][j] = 0;
@@ -33,7 +33,7 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	get2ndKinect();
+	//get2ndKinect();
 	setDMXTributaries();
 	changeMode();
 	//updateSkeleton();
@@ -104,10 +104,6 @@ void ofApp::draw() {
 	drawSimulation();
 	//drawKinect();
 
-	for (int )
-	for (int i = 0; i < tributaries.size(); i++) {
-		tributaries[i].drawInRadius(x, y, 100, ofColor(0, 0, 0));
-	}
 
 }
 void ofApp::playShow() {
