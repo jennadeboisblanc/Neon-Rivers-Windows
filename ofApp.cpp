@@ -24,6 +24,11 @@ void ofApp::setup() {
 	numTracked = 0;
 
 	bool connected = tcpClient.setup("10.206.231.233", 5204);
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 3; j++) {
+			kinect2Users[i][j] = 0;
+		}
+	}
 }
 
 //--------------------------------------------------------------
@@ -134,7 +139,7 @@ void ofApp::drawKinect() {
 				numTracked++;
 				for (auto joint : body.joints) {
 					//now do something with the joints
-					if (joint.first == JointType_HandRight) {
+					/*if (joint.first == JointType_HandRight) {
 						float x = joint.second.getPosition().x*previewWidth;
 						float y = previewHeight - joint.second.getPosition().y*previewHeight;
 						//ofCircle(x, y, 50, 50);
@@ -150,8 +155,8 @@ void ofApp::drawKinect() {
 							tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
 						}
 						//ofCircle(x, y, 50, 50);
-					}
-					else if (joint.first == JointType_SpineShoulder) {
+					} */
+					if (joint.first == JointType_SpineShoulder) {
 						float x = joint.second.getPosition().x*previewWidth;
 						float y = previewHeight - joint.second.getPosition().y*previewHeight;
 						//ofCircle(x, y, 50, 50);
@@ -363,9 +368,7 @@ void ofApp::glitchOut() {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
-	if (tcpClient.isConnected()) {
-		tcpClient.send("HELLO WORLD!");
-	}
+
 }
 
 //--------------------------------------------------------------
@@ -1471,13 +1474,17 @@ void ofApp::setStoredColors() {
 }
 
 void ofApp::get2ndKinect() {
-	unsigned char buffer[12];
-	tcpClient.receiveRawBytes((char*)&buffer[0], 12);
-	int i = 0;
-	float x = unpackFloat(&buffer[i], &i);
-	float y = unpackFloat(&buffer[i], &i);
-	float z = unpackFloat(&buffer[i], &i);
-	cout << x << ", " << y << ", " << z << endl;
+	unsigned char buffer[24];
+	tcpClient.receiveRawBytes((char*)&buffer[0], 18);
+
+	for (int i = 0; i < 18; i++) {
+		kinect2Users[i/3][i%3] = buffer[i];
+	}
+	//int i = 0;
+	//int x = unpackFloat(&buffer[i], &i);
+	//int y = unpackFloat(&buffer[i], &i);
+	//float z = unpackFloat(&buffer[i], &i);
+	cout << kinect2Users[0][0] << ", " << kinect2Users[0][1] << ", " << kinect2Users[0][2]  << endl;
 }
 
 // unpack method for retrieving data in network byte,
