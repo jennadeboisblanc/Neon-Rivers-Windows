@@ -95,4 +95,5 @@ class ofApp : public ofBaseApp{
 		ofxTCPClient tcpClient;
 		void get2ndKinect();
 		float unpackFloat(const void *buf, int *i);
+		int kinect2Users[6][3];
 };

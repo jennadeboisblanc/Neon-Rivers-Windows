@@ -117,10 +117,11 @@ void Tributary::setGradientTransition() {
 
 void Tributary::updateGradientPulse() {
 	if (transitioning) {
-		startOffset += 2;
+		// was += 1 but had to slow down for now
+		startOffset += ofGetElapsedTimeMillis() % 2;
 		if (startOffset >= pixels.size()) transitioning = false;
 	}
-	offset += 2;
+	offset += ofGetElapsedTimeMillis()%2;
 }
 
 void Tributary::pulseGradient(int num, ofColor prevGradients[], ofColor gradients[]) {
