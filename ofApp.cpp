@@ -103,7 +103,7 @@ void ofApp::setDMXTributaries() {
 void ofApp::draw() {
 	drawSimulation();
 	//drawKinect();
-
+	ofDrawBitmapString(mouseY, 400, 400);
 
 }
 void ofApp::playShow() {
