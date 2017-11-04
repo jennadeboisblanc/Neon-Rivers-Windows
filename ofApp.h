@@ -41,9 +41,8 @@ class ofApp : public ofBaseApp{
 		void updateSimulation();
 		void drawSimulation();
 		void pulseGradient(int num);
-		void drawGlitch(int x, int y, int r, ofColor c);
 		void drawTributary(int ind);
-		void drawGlitch(int x, int y, int r, ofColor c1, ofColor c2, ofColor c3, ofColor c4);
+		void drawGlitch(int x, int y, int r);
 		void glitchOut();
 		void setRandomPulse(int ms, int ps, int sep);
 		bool pulsing;
@@ -91,9 +90,18 @@ class ofApp : public ofBaseApp{
 		bool checkTransitioning();
 		void startTransitioning();
 
-		// connect to Pi
+		// connect to mini comp
 		ofxTCPClient tcpClient;
 		void get2ndKinect();
 		float unpackFloat(const void *buf, int *i);
-		int kinect2Users[6][3];
+		//int kinect2Users[6][3];
+		float kinect2Coords[18];
+		void kinect2Glitch();
+
+		// distances
+		int getKinect1X(float x);
+		int getKinect1Y(float y, float z);
+		int getKinect2X(float x);
+		int getKinect2Y(float y, float z);
+
 };

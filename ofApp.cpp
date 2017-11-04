@@ -161,9 +161,7 @@ void ofApp::drawKinect() {
 						float x = joint.second.getPosition().x*previewWidth;
 						float y = previewHeight - joint.second.getPosition().y*previewHeight;
 						//ofCircle(x, y, 50, 50);
-						for (int i = 0; i < tributaries.size(); i++) {
-							tributaries[i].drawInRadius(x, y, 100, ofColor(0, 0, 0));
-						}
+						drawGlitch(getKinect1X(x), getKinect1Y(y));
 					}
 				}
 			}
@@ -311,14 +309,16 @@ void ofApp::updateSimulation() {
 
 //--------------------------------------------------------------
 void ofApp::drawSimulation() {
-	if (numTracked < 5) {
-		pulseGradient(numSelect);
-		drawGlitch(ofGetMouseX(), ofGetMouseY(), 60, glitchColors[0], glitchColors[1], glitchColors[2], glitchColors[3]);
+	//if (numTracked < 5) {
+		//pulseGradient(numSelect);
+		//drawGlitch(ofGetMouseX(), ofGetMouseY());
 		//drawTributary(4);
-	}
-	else {
-		glitchOut();
-	}
+	//}
+	//else {
+	//	glitchOut();
+	//}
+	pulseGradient(numSelect);
+	kinect2Glitch();
 
 }
 
@@ -349,15 +349,9 @@ void ofApp::pulseGradient(int num) {
 	}
 }
 
-void ofApp::drawGlitch(int x, int y, int r, ofColor c) {
+void ofApp::drawGlitch(int x, int y, int r) {
 	for (int i = 0; i < tributaries.size(); i++) {
-		tributaries[i].drawGlitch(x, y, r, c);
-	}
-}
-
-void ofApp::drawGlitch(int x, int y, int r, ofColor c1, ofColor c2, ofColor c3, ofColor c4) {
-	for (int i = 0; i < tributaries.size(); i++) {
-		tributaries[i].drawGlitch(x, y, r, c1, c2, c3, c4);
+		tributaries[i].drawGlitch(x, y, r, glitchColors[0], glitchColors[1], glitchColors[2], glitchColors[3]);
 	}
 }
 
@@ -1475,17 +1469,26 @@ void ofApp::setStoredColors() {
 }
 
 void ofApp::get2ndKinect() {
-	unsigned char buffer[24];
-	tcpClient.receiveRawBytes((char*)&buffer[0], 18);
+	unsigned char buffer[72];
+	tcpClient.receiveRawBytes((char*)&buffer[0], 72);
 
-	for (int i = 0; i < 18; i++) {
-		kinect2Users[i/3][i%3] = buffer[i];
+	//for (int i = 0; i < 18; i++) {
+	//	kinect2Users[i/3][i%3] = buffer[i];
+	//}
+	//for (int i = 0; i < )
+	int i = 0;
+	int c = 0;
+	while (i < 72) {
+		float x = unpackFloat(&buffer[i], &i);
+		float y = unpackFloat(&buffer[i], &i);
+		float z = unpackFloat(&buffer[i], &i);
+
+		kinect2Coords[c++] = x;
+		kinect2Coords[c++] = y;
+		kinect2Coords[c++] = z;
 	}
-	//int i = 0;
-	//int x = unpackFloat(&buffer[i], &i);
-	//int y = unpackFloat(&buffer[i], &i);
-	//float z = unpackFloat(&buffer[i], &i);
-	cout << kinect2Users[0][0] << ", " << kinect2Users[0][1] << ", " << kinect2Users[0][2]  << endl;
+	
+	//cout << kinect2Users[0][0] << ", " << kinect2Users[0][1] << ", " << kinect2Users[0][2]  << endl;
 }
 
 // unpack method for retrieving data in network byte,
@@ -1503,4 +1506,27 @@ float ofApp::unpackFloat(const void *buf, int *i) {
 		b[3]);
 	// why was this originally returning a pointer to temp??
 	return (float)temp;
+}
+
+void ofApp::kinect2Glitch() {
+	for (int i = 0; i < 18; i+=3) {
+		if (kinect2Coords[i] < 200) {
+			numTracked++;
+			drawGlitch(getKinect2X(kinect2Coords[i]), getKinect2Y(kinect2Coords[i + 1], kinect2Coords[i + 2]));
+		}
+	}
+}
+
+int  ofApp::getKinect1X(float x) {
+	return 0;
+}
+
+int  ofApp::getKinect1Y(float y, float z) {
+	return 0;
+}
+int  ofApp::getKinect2X(float x) {
+	return 0;
+}
+int  ofApp::getKinect2Y(float y, float z) {
+	return 0;
 }
