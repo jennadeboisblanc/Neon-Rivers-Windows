@@ -24,10 +24,8 @@ void ofApp::setup() {
 	numTracked = 0;
 
 	//bool connected = tcpClient.setup("10.206.231.233", 5204);
-	for (int i = 0; i < 6; i++) {
-		for (int j = 0; j < 3; j++) {
-			kinect2Users[i][j] = 0;
-		}
+	for (int i = 0; i < 18; i++) {
+		kinect2Coords[i] = 255;
 	}
 }
 
@@ -102,8 +100,8 @@ void ofApp::setDMXTributaries() {
 //--------------------------------------------------------------
 void ofApp::draw() {
 	drawSimulation();
-	//drawKinect();
-	ofDrawBitmapString(mouseY, 400, 400);
+	drawKinect();
+	//ofDrawBitmapString(mouseY, 400, 400);
 
 }
 void ofApp::playShow() {
@@ -139,29 +137,11 @@ void ofApp::drawKinect() {
 			if (body.tracked == true) {
 				numTracked++;
 				for (auto joint : body.joints) {
-					//now do something with the joints
-					/*if (joint.first == JointType_HandRight) {
-						float x = joint.second.getPosition().x*previewWidth;
-						float y = previewHeight - joint.second.getPosition().y*previewHeight;
-						//ofCircle(x, y, 50, 50);
-						for (int i = 0; i < tributaries.size(); i++) {
-							tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
-						}
-					}
-					else if (joint.first == JointType_HandLeft) {
-						float x = joint.second.getPosition().x*previewWidth;
-						float y = previewHeight - joint.second.getPosition().y*previewHeight;
-						//ofCircle(x, y, 50, 50);
-						for (int i = 0; i < tributaries.size(); i++) {
-							tributaries[i].drawGlitch(x, y, 50, ofColor(255, 0, 0));
-						}
-						//ofCircle(x, y, 50, 50);
-					} */
 					if (joint.first == JointType_SpineShoulder) {
-						float x = joint.second.getPosition().x*previewWidth;
-						float y = previewHeight - joint.second.getPosition().y*previewHeight;
-						//ofCircle(x, y, 50, 50);
-						drawGlitch(getKinect1X(x), getKinect1Y(y));
+						float x = joint.second.getPosition().x;
+						float y = joint.second.getPosition().y;
+						float z = joint.second.getPosition().z;
+						drawGlitch(getKinect1X(x), getKinect1Y(y, z), 50);
 					}
 				}
 			}
@@ -318,7 +298,7 @@ void ofApp::drawSimulation() {
 	//	glitchOut();
 	//}
 	pulseGradient(numSelect);
-	kinect2Glitch();
+	//kinect2Glitch();
 
 }
 
@@ -1512,17 +1492,24 @@ void ofApp::kinect2Glitch() {
 	for (int i = 0; i < 18; i+=3) {
 		if (kinect2Coords[i] < 200) {
 			numTracked++;
-			drawGlitch(getKinect2X(kinect2Coords[i]), getKinect2Y(kinect2Coords[i + 1], kinect2Coords[i + 2]));
+			drawGlitch(getKinect2X(kinect2Coords[i]), getKinect2Y(kinect2Coords[i + 1], kinect2Coords[i + 2]), 50);
 		}
 	}
 }
 
 int  ofApp::getKinect1X(float x) {
-	return 0;
+	float zoneX1 = 1067/2.0-15;
+	float zoneX2 = 1067.0;
+	return int(ofClamp(ofMap(x, -2.5, 2.5, zoneX1, zoneX2), zoneX1, zoneX2));
 }
 
 int  ofApp::getKinect1Y(float y, float z) {
-	return 0;
+	float kinect2StartH = 4.3;
+	float personH = 0.82 * 1.69; // percent of way to shoulder * average human height
+	float heightToShoulder = kinect2StartH - personH;
+	float distance = sqrt(z * z - heightToShoulder * heightToShoulder);
+	float mappedY = ofMap(distance, 0, 5, 0, 350);
+	return int(ofClamp(mappedY, 0, 380));
 }
 int  ofApp::getKinect2X(float x) {
 	return 0;

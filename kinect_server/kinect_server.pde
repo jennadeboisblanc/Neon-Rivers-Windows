@@ -69,16 +69,16 @@ void setSkeleton(int ind, KJoint[] joints) {
   transmitArray[ind*4 + 2] = getYMap(joints[KinectPV2.JointType_SpineShoulder]);
 }
 
-byte getXMap(KJoint joint) {
-  return metersTo255X(joint.getX() + kinect2StartX);
-}
+//byte getXMap(KJoint joint) {
+//  return metersTo255X(joint.getX() + kinect2StartX);
+//}
 
-byte getYMap(KJoint joint) {
-  float personH = 0.82 * 1.69; // percent of way to shoulder * average human height
-  float heightToShoulder = kinect2StartH - personH;
-  float distance = sqrt(joint.getZ() * joint.getZ() - heightToShoulder * heightToShoulder);
-  return metersTo255X(distance);
-}
+//byte getYMap(KJoint joint) {
+//  float personH = 0.82 * 1.69; // percent of way to shoulder * average human height
+//  float heightToShoulder = kinect2StartH - personH;
+//  float distance = sqrt(joint.getZ() * joint.getZ() - heightToShoulder * heightToShoulder);
+//  return metersTo255X(distance);
+//}
 
 byte[] getJointByteArray(KJoint joint) {
   byte[] skeletonPoints = new byte[12];
@@ -93,33 +93,13 @@ byte[] getJointByteArray(KJoint joint) {
   return skeletonPoints;
 }
 
-float metersToPixelsX(float meters) {
-  return map(meters, 0, 10.1, 0, 1067);
-}
-
-float metersToPixelsY(float meters) {
-  return map(meters, 0, 5.18, 0, 493);
-}
-
-byte metersTo255X(float meters) {
-  return byte(constrain(map(meters, 0, 10.1, 0, 255), 0, 255));
-}
-
-byte metersTo255Y(float meters) {
-  return byte(constrain(map(meters, 0, 5.18, 0, 255), 0, 255));
-}
-
 void setNoSkeleton(int ind) {
-  // isTracked, x, and y set to 0
-  for (int i = 0; i < 3; i++) { 
-    transmitArray[ind*4 + i] = 0;
+  transmitArray[ind] = 0;
+  for (int i = 1; i < 3; i++) { 
+    transmitArray[ind*4 + i] = byte(255);
   }
 }
 
 public static byte [] float2ByteArray (float value) {
   return ByteBuffer.allocate(4).putFloat(value).array();
 }
-
-//byte getByte(float coord) {
-//  return byte(constrain(map(coord, -1, 1, 0, 255), 0, 255));
-//}

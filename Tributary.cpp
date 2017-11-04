@@ -208,33 +208,11 @@ void Tributary::drawInRadius(float x, float y, float r, ofColor c) {
 	}
 }
 
-void Tributary::drawGlitch(float x, float y, float r, ofColor c) {
-	for (int j = 0; j < pixels.size(); j++) {
-		float dis = pixels[j].getDistance(x, y);
-		if (dis < r) {
-			int likelihood = int(ofRandom(0, dis));
-		//	if (likelihood < dis/2) {
-				if (ofGetElapsedTimeMillis() - lastChecked > 50) {
-					//pixels[j].setGlitchColor( ofColor::fromHsb((int(c.getHue() + 10 + ofRandom(20))) % 255, 255, 255));
-					pixels[j].setGlitchColor(ofColor(25));
-				}
-				pixels[j].drawGlitch();
-				//pixels[j].draw(ofColor(255, 0, 0));
-		//	}
-
-		}
-	}
-	if (ofGetElapsedTimeMillis() - lastChecked > 50) {
-		lastChecked = ofGetElapsedTimeMillis();
-	}
-	else if (lastChecked > ofGetElapsedTimeMillis()) lastChecked = ofGetElapsedTimeMillis();
-}
 
 void Tributary::drawGlitch(float x, float y, float r, ofColor c1, ofColor c2, ofColor c3, ofColor c4) {
 	for (int j = 0; j < pixels.size(); j++) {
 		float dis = pixels[j].getDistance(x, y);
 		if (dis < r) {
-			int likelihood = int(ofRandom(0, dis));
 			if (ofGetElapsedTimeMillis() - lastChecked > 50) {
 				int r = int(ofRandom(4));
 				if (r == 0) pixels[j].setGlitchColor(c1);
