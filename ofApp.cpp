@@ -98,8 +98,12 @@ void ofApp::setDMXTributaries() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	drawSimulation();
+	pulseGradient(numSelect);
 	drawKinect();
+	
+	//drawGlitch(ofGetMouseX(), ofGetMouseY(), 50, changeGlitch);
+	//drawGlitch(ofGetMouseX()+50, ofGetMouseY()+30, 50, changeGlitch);
+	kinect2Glitch();
 }
 void ofApp::playShow() {
 	//if ()
@@ -278,17 +282,6 @@ void ofApp::updateSimulation() {
 		}
 	}
 
-	if (ofGetElapsedTimeMillis() - lastCheckedGlitch > 50) {
-		lastCheckedGlitch = ofGetElapsedTimeMillis();
-		changeGlitch = true;
-	}
-	else {
-		//changeGlitch = false;
-	}
-	if (lastCheckedGlitch > ofGetElapsedTimeMillis()) {
-		lastCheckedGlitch = ofGetElapsedTimeMillis();
-	}
-
 }
 
 //--------------------------------------------------------------
@@ -301,23 +294,11 @@ void ofApp::drawSimulation() {
 	//else {
 	//	glitchOut();
 	//}
-	pulseGradient(numSelect);
-
-	drawGlitch(ofGetMouseX(), ofGetMouseY(), 50, changeGlitch);
-	drawGlitch(ofGetMouseX()+50, ofGetMouseY()+30, 50, changeGlitch);
-	kinect2Glitch();
+	
 
 }
 
 //--------------------------------------------------------------
-
-void ofApp::setRandomPulse(int ms, int ps, int sep) {
-	pulsing = true;
-	pulseTime = ms;
-	for (int i = 0; i < tributaries.size(); i++) {
-		tributaries[i].setRandomPulse(ps, sep);
-	}
-}
 
 void ofApp::drawTributary(int ind) {
 	int trib = (int(ofGetElapsedTimef())/2) % tributaries.size();
@@ -1456,19 +1437,27 @@ void ofApp::setStoredColors() {
 }
 
 void ofApp::get2ndKinect() {
-	unsigned char buffer[72];
-	tcpClient.receiveRawBytes((char*)&buffer[0], 72);
-
-	int i = 0;
-	int c = 0;
-	while (i < 72) {
-		float x = unpackFloat(&buffer[i], &i);
-		float y = unpackFloat(&buffer[i], &i);
-		float z = unpackFloat(&buffer[i], &i);
+	unsigned char buffer[73];
+	tcpClient.receiveRawBytes((char*)&buffer[0], 73);
+	if (buffer[0] == 89) {
+		// hopefully this means we received info
+		int i = 1;
+		int c = 0;
+		while (i < 73) {
+			float x = unpackFloat(&buffer[i], &i);
+			float y = unpackFloat(&buffer[i], &i);
+			float z = unpackFloat(&buffer[i], &i);
+			if ((x < 1 && y < 1 && z < 1)) {
+				//cout << "nothing at this point" << endl;
+			}
+			else {
+				kinect2Coords[c++] = x;
+				kinect2Coords[c++] = y;
+				kinect2Coords[c++] = z;
+				//cout << x << " " << y << " " << z << endl;
+			}
+		}
 		
-		kinect2Coords[c++] = x;
-		kinect2Coords[c++] = y;
-		kinect2Coords[c++] = z;
 	}
 }
 
@@ -1493,6 +1482,7 @@ void ofApp::kinect2Glitch() {
 	for (int i = 0; i < 18; i+=3) {
 		if (kinect2Coords[i] < 200) {
 			numTracked++;
+			//cout << kinect2Coords[0] << " " << kinect2Coords[1] << " " << kinect2Coords[2] << endl;
 			drawGlitch(getKinect2X(kinect2Coords[i]), getKinect2Y(kinect2Coords[i + 1], kinect2Coords[i + 2]), 50, changeGlitch);
 		}
 	}
@@ -1515,8 +1505,9 @@ int  ofApp::getKinect1Y(float y, float z) {
 int  ofApp::getKinect2X(float x) {
 	float zoneX1 = 0.0;
 	float zoneX2 = 1067.0/2;
-	return int(ofClamp(ofMap(x, -2.5, 2.5, zoneX1, zoneX2), zoneX1, zoneX2));
+	return int(ofClamp(ofMap(x, -3.5, 2.5, zoneX1, zoneX2), zoneX1, zoneX2));
 }
+
 int  ofApp::getKinect2Y(float y, float z) {
 	//cout << z << endl;
 
