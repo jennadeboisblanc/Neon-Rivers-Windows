@@ -1,7 +1,4 @@
 
-float kinect2StartX = 10.1/4;
-float kinect2StartH = 4.3;
-
 import java.nio.*;
 //Thomas Sanchez Lengeling- http://codigogenerativo.com/
 import KinectPV2.KJoint;
@@ -24,82 +21,101 @@ void setup() {
   kinect.enableSkeleton3DMap(true);
   kinect.init();
 
-  transmitArray = new byte[18];
-  for (int i = 0; i < 18; i++) {
+  transmitArray = new byte[72];
+  for (int i = 0; i < 72; i++) {
     transmitArray[i] = 0;
   }
 }
 
 void draw() {
-  //setSkeletons();
-  setTestSkeletons();
+  setSkeletons();
+  //testTransmitArray();
   writeSkeletons();
 }
 
-void setTestSkeletons() {
-  for (int i = 0; i < 18; i++) {
-    transmitArray[i] = byte(i);
+void testTransmitArray() {
+   for (int i = 0; i < 6; i++) {
+    if (trackingSkeleton(i)) {
+      println(skelCoord2Float(i, 0) + " " + skelCoord2Float(i, 1) + " " + skelCoord2Float(i, 2));
+    }
   }
+}
+
+void testNoSkeleton() {
+  for (int i = 0; i < 6; i++) {
+    setNoSkeleton(i);
+  }
+  if (trackingSkeleton(2)) {
+    println("failed the tracking test");
+  }
+  else {
+    println("tracking succeeded?");
+  }
+}
+
+// if x coord being transmitted is > 200, not tracked
+boolean trackingSkeleton(int ind) {
+  if (skelCoord2Float(ind, 0) > 200) {
+    return false;
+  }
+  return true;
+}
+
+float skelCoord2Float(int ind, int coord) {
+  byte[] fl = new byte[4];
+  fl[0] = transmitArray[ind*12+coord*4];
+  fl[1] = transmitArray[ind*12 + 1+coord*4];
+  fl[2] = transmitArray[ind*12 + 2+coord*4];
+  fl[3] = transmitArray[ind*12 + 3+coord*4];
+  return bytearray2float(fl);
 }
 
 void writeSkeletons() {
   myServer.write(transmitArray);
 }
 
-void setSkeletons() {
-  ArrayList<KSkeleton> skeletonArray =  kinect.getSkeleton3d();
-  // send 3 joints (2 hands, spineShoulder), 3 coords for each (x, y, z), 4 bytes per float
-  // byte[] skeletonPoints = new byte[3*3*4];
-  //individual JOINTS
-  for (int i = 0; i < skeletonArray.size(); i++) {
-    KSkeleton skeleton = (KSkeleton) skeletonArray.get(i);
-    println("num joints: " + skeleton.getJoints().length);
-    if (skeleton.isTracked()) {
-      KJoint[] joints = skeleton.getJoints();
-      setSkeleton(i, joints);
-    } else {
-      setNoSkeleton(i);
-    }
+void resetSkeletons() {
+  for (int i = 0; i < 6; i++) {
+    setNoSkeleton(i);
   }
 }
 
-void setSkeleton(int ind, KJoint[] joints) {
-  transmitArray[ind*4] = byte(255);
-  transmitArray[ind*4 + 1] = getXMap(joints[KinectPV2.JointType_SpineShoulder]);
-  transmitArray[ind*4 + 2] = getYMap(joints[KinectPV2.JointType_SpineShoulder]);
+void setSkeletons() {
+  resetSkeletons();
+  ArrayList<KSkeleton> skeletonArray =  kinect.getSkeleton3d();
+ 
+  for (int i = 0; i < skeletonArray.size(); i++) {
+    KSkeleton skeleton = (KSkeleton) skeletonArray.get(i);
+    if (skeleton.isTracked()) {
+      KJoint[] joints = skeleton.getJoints();
+      setSkeleton(i, joints[KinectPV2.JointType_SpineShoulder]);
+    } 
+  }
 }
 
-//byte getXMap(KJoint joint) {
-//  return metersTo255X(joint.getX() + kinect2StartX);
-//}
-
-//byte getYMap(KJoint joint) {
-//  float personH = 0.82 * 1.69; // percent of way to shoulder * average human height
-//  float heightToShoulder = kinect2StartH - personH;
-//  float distance = sqrt(joint.getZ() * joint.getZ() - heightToShoulder * heightToShoulder);
-//  return metersTo255X(distance);
-//}
-
-byte[] getJointByteArray(KJoint joint) {
-  byte[] skeletonPoints = new byte[12];
+void setSkeleton(int ind, KJoint joint) {
   byte[] floatArrayX = float2ByteArray(joint.getX());
   byte[] floatArrayY = float2ByteArray(joint.getY());
   byte[] floatArrayZ = float2ByteArray(joint.getZ());
   for (int j = 0; j < 4; j++) {
-    skeletonPoints[j] = floatArrayX[j];
-    skeletonPoints[4 + j] = floatArrayY[j];
-    skeletonPoints[8 + j] = floatArrayZ[j];
+    transmitArray[ind*12 + j] = floatArrayX[j];
+    transmitArray[ind*12+4 + j] = floatArrayY[j];
+    transmitArray[ind*12+8 + j] = floatArrayZ[j];
   }
-  return skeletonPoints;
 }
 
 void setNoSkeleton(int ind) {
-  transmitArray[ind] = 0;
-  for (int i = 1; i < 3; i++) { 
-    transmitArray[ind*4 + i] = byte(255);
+  byte[] b = float2ByteArray(650);
+  for (int i = 0; i < 4; i++) { 
+    transmitArray[ind*12 + i] = b[i];
   }
 }
 
-public static byte [] float2ByteArray (float value) {
-  return ByteBuffer.allocate(4).putFloat(value).array();
+byte [] float2ByteArray (float value){  
+    return ByteBuffer.allocate(4).putFloat(value).array();
+}
+
+float bytearray2float(byte[] b) {
+    ByteBuffer buf = ByteBuffer.wrap(b);
+    return buf.getFloat();
 }
