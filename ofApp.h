@@ -42,8 +42,6 @@ class ofApp : public ofBaseApp{
 		void drawSimulation();
 		void pulseGradient(int num);
 		void drawTributary(int ind);
-		void drawGlitch(int x, int y, int r);
-		void glitchOut();
 		void setRandomPulse(int ms, int ps, int sep);
 		bool pulsing;
 		uint64_t lastChecked;
@@ -51,6 +49,11 @@ class ofApp : public ofBaseApp{
 		int numTracked;
 		ofColor gradientColors[9];
 		ofColor glitchColors[9];
+
+		void drawGlitch(int x, int y, int r, bool change);
+		void glitchOut();
+		bool changeGlitch;
+		uint64_t lastCheckedGlitch;
 
 		// SVG
 		ofxSVG svg;

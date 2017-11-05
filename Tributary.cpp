@@ -209,24 +209,20 @@ void Tributary::drawInRadius(float x, float y, float r, ofColor c) {
 }
 
 
-void Tributary::drawGlitch(float x, float y, float r, ofColor c1, ofColor c2, ofColor c3, ofColor c4) {
+void Tributary::drawGlitch(float x, float y, float r, bool change, ofColor c1, ofColor c2, ofColor c3, ofColor c4) {
 	for (int j = 0; j < pixels.size(); j++) {
 		float dis = pixels[j].getDistance(x, y);
 		if (dis < r) {
-			if (ofGetElapsedTimeMillis() - lastChecked > 50) {
+			//if (change) {
 				int r = int(ofRandom(4));
 				if (r == 0) pixels[j].setGlitchColor(c1);
 				else if (r == 1) pixels[j].setGlitchColor(c2);
 				else if (r == 2) pixels[j].setGlitchColor(c3);
 				else if (r == 3) pixels[j].setGlitchColor(c4);
-			}
+			//}
 			pixels[j].drawGlitch();
 		}
 	}
-	if (ofGetElapsedTimeMillis() - lastChecked > 50) {
-		lastChecked = ofGetElapsedTimeMillis();
-	}
-	else if (lastChecked > ofGetElapsedTimeMillis()) lastChecked = ofGetElapsedTimeMillis();
 }
 
 void Tributary::drawGroup() {

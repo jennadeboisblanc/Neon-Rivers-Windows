@@ -23,7 +23,7 @@ void ofApp::setup() {
 	ofSetWindowShape(previewWidth * 2, previewHeight * 2);
 	numTracked = 0;
 
-	//bool connected = tcpClient.setup("10.206.231.233", 5204);
+	bool connected = tcpClient.setup("10.206.231.228", 5204);
 	for (int i = 0; i < 18; i++) {
 		kinect2Coords[i] = 255;
 	}
@@ -31,10 +31,9 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	//get2ndKinect();
+	get2ndKinect();
 	setDMXTributaries();
 	changeMode();
-	//updateSkeleton();
 	for (int i = 0; i < 8; i++) {
 		anNode.sendDmx("10.206.231.229", 0x0, i, dmxData[i], 512);
 	}
@@ -101,8 +100,6 @@ void ofApp::setDMXTributaries() {
 void ofApp::draw() {
 	drawSimulation();
 	drawKinect();
-	//ofDrawBitmapString(mouseY, 400, 400);
-
 }
 void ofApp::playShow() {
 	//if ()
@@ -141,7 +138,7 @@ void ofApp::drawKinect() {
 						float x = joint.second.getPosition().x;
 						float y = joint.second.getPosition().y;
 						float z = joint.second.getPosition().z;
-						drawGlitch(getKinect1X(x), getKinect1Y(y, z), 50);
+						drawGlitch(getKinect1X(x), getKinect1Y(y, z), 50, changeGlitch);
 					}
 				}
 			}
@@ -266,11 +263,6 @@ void ofApp::setupSimulation() {
 	for (int i = 0; i < tributaries.size(); i++) {
 		tributaries[i].setGroup(i);
 	}
-
-
-	/////// DEPRECATED
-	//pulsing = true;
-	//setRandomPulse(40, 2, 30); // millis, packet size, separation
 }
 
 //--------------------------------------------------------------
@@ -285,20 +277,35 @@ void ofApp::updateSimulation() {
 			lastChecked = ofGetElapsedTimeMillis();
 		}
 	}
+
+	if (ofGetElapsedTimeMillis() - lastCheckedGlitch > 50) {
+		lastCheckedGlitch = ofGetElapsedTimeMillis();
+		changeGlitch = true;
+	}
+	else {
+		//changeGlitch = false;
+	}
+	if (lastCheckedGlitch > ofGetElapsedTimeMillis()) {
+		lastCheckedGlitch = ofGetElapsedTimeMillis();
+	}
+
 }
 
 //--------------------------------------------------------------
 void ofApp::drawSimulation() {
 	//if (numTracked < 5) {
 		//pulseGradient(numSelect);
-		//drawGlitch(ofGetMouseX(), ofGetMouseY());
+		
 		//drawTributary(4);
 	//}
 	//else {
 	//	glitchOut();
 	//}
 	pulseGradient(numSelect);
-	//kinect2Glitch();
+
+	drawGlitch(ofGetMouseX(), ofGetMouseY(), 50, changeGlitch);
+	drawGlitch(ofGetMouseX()+50, ofGetMouseY()+30, 50, changeGlitch);
+	kinect2Glitch();
 
 }
 
@@ -329,9 +336,9 @@ void ofApp::pulseGradient(int num) {
 	}
 }
 
-void ofApp::drawGlitch(int x, int y, int r) {
+void ofApp::drawGlitch(int x, int y, int r, bool change) {
 	for (int i = 0; i < tributaries.size(); i++) {
-		tributaries[i].drawGlitch(x, y, r, glitchColors[0], glitchColors[1], glitchColors[2], glitchColors[3]);
+		tributaries[i].drawGlitch(x, y, r, change, glitchColors[0], glitchColors[1], glitchColors[2], glitchColors[3]);
 	}
 }
 
@@ -1398,8 +1405,8 @@ void ofApp::changeMode() {
 	else if (ofGetElapsedTimef() > modeTime + modeDuration && !checkTransitioning()) {
 		modeSelect = int(ofRandom(64));
 		modeTime = ofGetElapsedTimef();
-		modeDuration = int(ofRandom(45, 120));
-		//modeDuration = 10;
+		modeDuration = int(ofRandom(1, 11));
+		//modeDuration = 1;
 		startTransitioning();
 		setMode();
 	}
@@ -1452,23 +1459,17 @@ void ofApp::get2ndKinect() {
 	unsigned char buffer[72];
 	tcpClient.receiveRawBytes((char*)&buffer[0], 72);
 
-	//for (int i = 0; i < 18; i++) {
-	//	kinect2Users[i/3][i%3] = buffer[i];
-	//}
-	//for (int i = 0; i < )
 	int i = 0;
 	int c = 0;
 	while (i < 72) {
 		float x = unpackFloat(&buffer[i], &i);
 		float y = unpackFloat(&buffer[i], &i);
 		float z = unpackFloat(&buffer[i], &i);
-
+		
 		kinect2Coords[c++] = x;
 		kinect2Coords[c++] = y;
 		kinect2Coords[c++] = z;
 	}
-	
-	//cout << kinect2Users[0][0] << ", " << kinect2Users[0][1] << ", " << kinect2Users[0][2]  << endl;
 }
 
 // unpack method for retrieving data in network byte,
@@ -1485,14 +1486,14 @@ float ofApp::unpackFloat(const void *buf, int *i) {
 		(b[2] << 8) |
 		b[3]);
 	// why was this originally returning a pointer to temp??
-	return (float)temp;
+	return *((float *) &temp);
 }
 
 void ofApp::kinect2Glitch() {
 	for (int i = 0; i < 18; i+=3) {
 		if (kinect2Coords[i] < 200) {
 			numTracked++;
-			drawGlitch(getKinect2X(kinect2Coords[i]), getKinect2Y(kinect2Coords[i + 1], kinect2Coords[i + 2]), 50);
+			drawGlitch(getKinect2X(kinect2Coords[i]), getKinect2Y(kinect2Coords[i + 1], kinect2Coords[i + 2]), 50, changeGlitch);
 		}
 	}
 }
@@ -1512,8 +1513,17 @@ int  ofApp::getKinect1Y(float y, float z) {
 	return int(ofClamp(mappedY, 0, 380));
 }
 int  ofApp::getKinect2X(float x) {
-	return 0;
+	float zoneX1 = 0.0;
+	float zoneX2 = 1067.0/2;
+	return int(ofClamp(ofMap(x, -2.5, 2.5, zoneX1, zoneX2), zoneX1, zoneX2));
 }
 int  ofApp::getKinect2Y(float y, float z) {
-	return 0;
+	//cout << z << endl;
+
+	float kinect2StartH = 4.3;
+	float personH = 0.82 * 1.69; // percent of way to shoulder * average human height
+	float heightToShoulder = kinect2StartH - personH;
+	float distance = sqrt(z * z - heightToShoulder * heightToShoulder);
+	float mappedY = ofMap(distance, 0, 5, 0, 350);
+	return int(ofClamp(mappedY, 0, 380));
 }
