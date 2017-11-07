@@ -34,8 +34,7 @@ public:
 	void glitchOut();
 
 	void drawInRadius(float x, float y, float r, ofColor c);
-	void drawGlitch(float x, float y, float r, ofColor c);
-	void drawGlitch(float x, float y, float r, ofColor c1, ofColor c2, ofColor c3, ofColor c4);
+	void drawGlitch(float x, float y, float r, bool change, ofColor c1, ofColor c2, ofColor c3, ofColor c4);
 
     bool inPulse(int index);
 
