@@ -7,11 +7,12 @@ KinectPV2 kinect;
 import processing.net.*;
 Server myServer;
 
+long lastCheckedKinect = 0;
 
 byte transmitArray[];
 
 void setup() {
-  //size(200, 200);
+  size(200, 200);
   // Starts a myServer on port 5204
   myServer = new Server(this, 5204);
 
@@ -20,17 +21,22 @@ void setup() {
   //enable 3d  with (x,y,z) position
   kinect.enableSkeleton3DMap(true);
   kinect.init();
+  
 
-  transmitArray = new byte[72];
-  for (int i = 0; i < 72; i++) {
+  transmitArray = new byte[73];
+  transmitArray[0] = 89;
+  for (int i = 1; i < 73; i++) {
     transmitArray[i] = 0;
   }
+  frameRate(15);
 }
 
 void draw() {
+  background(0);
   setSkeletons();
-  //testTransmitArray();
+  testTransmitArray();
   writeSkeletons();
+  //text(frameRate, 100, 100);
 }
 
 void testTransmitArray() {
@@ -63,10 +69,10 @@ boolean trackingSkeleton(int ind) {
 
 float skelCoord2Float(int ind, int coord) {
   byte[] fl = new byte[4];
-  fl[0] = transmitArray[ind*12+coord*4];
-  fl[1] = transmitArray[ind*12 + 1+coord*4];
-  fl[2] = transmitArray[ind*12 + 2+coord*4];
-  fl[3] = transmitArray[ind*12 + 3+coord*4];
+  fl[0] = transmitArray[ind*12+coord*4+1];
+  fl[1] = transmitArray[ind*12 + 1+coord*4+1];
+  fl[2] = transmitArray[ind*12 + 2+coord*4+1];
+  fl[3] = transmitArray[ind*12 + 3+coord*4+1];
   return bytearray2float(fl);
 }
 
@@ -98,16 +104,16 @@ void setSkeleton(int ind, KJoint joint) {
   byte[] floatArrayY = float2ByteArray(joint.getY());
   byte[] floatArrayZ = float2ByteArray(joint.getZ());
   for (int j = 0; j < 4; j++) {
-    transmitArray[ind*12 + j] = floatArrayX[j];
-    transmitArray[ind*12+4 + j] = floatArrayY[j];
-    transmitArray[ind*12+8 + j] = floatArrayZ[j];
+    transmitArray[ind*12 + j+1] = floatArrayX[j];
+    transmitArray[ind*12+4 + j+1] = floatArrayY[j];
+    transmitArray[ind*12+8 + j+1] = floatArrayZ[j];
   }
 }
 
 void setNoSkeleton(int ind) {
   byte[] b = float2ByteArray(650);
   for (int i = 0; i < 4; i++) { 
-    transmitArray[ind*12 + i] = b[i];
+    transmitArray[ind*12 + i+1] = b[i];
   }
 }
 
